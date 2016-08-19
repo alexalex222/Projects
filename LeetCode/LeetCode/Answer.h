@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <climits>
 #include <functional>
+#include <stdint.h>
 
 using std::vector;
 using std::string;
@@ -73,8 +74,8 @@ public:
 	}
 
 	void moveZeroes(vector<int>& nums) {
-		int i = 0;
-		int j = 0;
+		size_t i = 0;
+		size_t j = 0;
 		while (j < nums.size()) {
 			if (nums[j] != 0) {
 				int temp = nums[j];
@@ -125,7 +126,7 @@ public:
 
 	int titleToNumber(string s) {
 		int number = 0;
-		for (int i = 0; i < s.size(); i++) {
+		for (size_t i = 0; i < s.size(); i++) {
 			char c = s.at(i);
 			int current_number = static_cast<int> (c - 'A') + 1;
 			number = number * 26 + current_number;
@@ -144,11 +145,11 @@ public:
 		if (lenS != lenT) return false;
 
 		vector<int> count(26, 0);
-		for (int i = 0; i < lenS; i++) {
+		for (size_t i = 0; i < lenS; i++) {
 			count[s[i] - 'a']++;
 		}
 
-		for (int i = 0; i < lenT; i++) {
+		for (size_t i = 0; i < lenT; i++) {
 			if(--count[t[i] - 'a'] < 0) return false;
 
 		}
@@ -166,7 +167,7 @@ public:
 		val['M'] = 1000;
 
 		int num = 0;
-		for (int i = 0; i < s.length() - 1; i++) {
+		for (size_t i = 0; i < s.length() - 1; i++) {
 			if (val[s[i]] < val[s[i + 1]]) num = num - val[s[i]];
 			else num += val[s[i]];
 		}
@@ -291,7 +292,7 @@ public:
 	}
 
 	int removeElement(vector<int>& nums, int val) {
-		int i = 0;
+		size_t i = 0;
 		int j = 0;
 		auto k = nums.size();
 		while (i < nums.size()) {
@@ -336,7 +337,7 @@ public:
 
 	int removeDuplicates(vector<int>& nums) {
 		if (nums.empty()) return 0;
-		int i = 0;
+		size_t i = 0;
 		int j = 0;
 		auto k = nums.size();
 		while (i < nums.size()) {
@@ -363,7 +364,7 @@ public:
 	int rob(vector<int>& nums) {
 		int odd = 0;
 		int even = 0;
-		for (int i = 0; i < nums.size(); i++) {
+		for (size_t i = 0; i < nums.size(); i++) {
 			if (i % 2 == 1) odd = std::max(odd + nums[i], even);
 			else even = std::max(even + nums[i], odd);
 		}
@@ -395,7 +396,7 @@ public:
 			vector<int> cur = vector<int>();
 			cur.push_back(1);
 			
-			for (int j = 0; j < pre.size() - 1; j++) {
+			for (size_t j = 0; j < pre.size() - 1; j++) {
 				cur.push_back(pre[j] + pre[j + 1]);
 			}
 
@@ -616,12 +617,12 @@ public:
 
 	bool containsNearbyDuplicate(vector<int>& nums, int k) {
 		map<int, int> myMap =map<int, int>();
-		for (int i = 0; i < nums.size(); i++) {
+		for (size_t i = 0; i < nums.size(); i++) {
 			if (myMap.find(nums[i]) == myMap.end()) {
 				myMap[nums[i]] = i;
 			}
 			else {
-				if (i - myMap[nums[i]] <= k) return true;
+				if (static_cast<int>(i - myMap[nums[i]]) <= k) return true;
 				else myMap[nums[i]] = i;
 			}
 		}
@@ -630,7 +631,7 @@ public:
 
 	bool isValid(string s) {
 		stack<char> st = stack<char>();
-		for (int i = 0; i < s.size(); i++) {
+		for (size_t i = 0; i < s.size(); i++) {
 			if ((s[i] == '(') || (s[i] == '[') || (s[i] == '{')) {
 				st.push(s[i]);
 			}
@@ -648,7 +649,7 @@ public:
 	bool isIsomorphic(string s, string t) {
 		map<char, char> myMap = map<char, char>();
 		set<char> mySet = set<char>();
-		for (int i = 0; i < s.size(); i++) {
+		for (size_t i = 0; i < s.size(); i++) {
 			if (myMap.find(s[i]) != myMap.end()) {
 				if (myMap[s[i]] == t[i]) continue;
 				else return false;
@@ -689,7 +690,7 @@ public:
 		int str_cnt = 1;
 		char chr = str[0];
 
-		for (int i = 1; i <= str.size(); i++) {
+		for (size_t i = 1; i <= str.size(); i++) {
 			if (chr == str[i]) str_cnt++;
 			else {
 				char temp = '0' + str_cnt;
@@ -755,8 +756,8 @@ public:
 		if (strs.empty()) return "";
 		if (strs.size() == 1) return strs[0];
 
-		for (int i = 0; i < strs[0].size(); i++) {
-			for (int j = 1; j < strs.size(); j++) {
+		for (size_t i = 0; i < strs[0].size(); i++) {
+			for (size_t j = 1; j < strs.size(); j++) {
 				if (i > strs[j].size() || strs[j - 1][i] != strs[j][i]) {
 					return strs[j].substr(0, i);
 				}
@@ -796,7 +797,7 @@ public:
 		int bull = 0;
 		int cow = 0;
 
-		for (int i = 0; i < secret.size(); i++) {
+		for (size_t i = 0; i < secret.size(); i++) {
 			if (secret[i] == guess[i]) bull++;
 			else {
 				if (m[secret[i]]++ < 0) cow++;
@@ -898,7 +899,7 @@ public:
 		vector<string> flag = vector<string>(numRows, "");
 		int direction = 1;
 		int i = 0;
-		for (int k = 0; k < s.size(); k++) {
+		for (size_t k = 0; k < s.size(); k++) {
 			flag[i] = flag[i] + s[k];
 			if ((i == 0 && k != 0) || (i == numRows - 1)) direction = -direction;
 			i = i + direction;
@@ -942,7 +943,7 @@ public:
 		string s;
 		int start = nums[0];
 		int end = nums[0];
-		for (int i = 1; i <= nums.size(); i++) {
+		for (size_t i = 1; i <= nums.size(); i++) {
 			if ((i < nums.size()) && (nums[i] == end + 1)) {
 				end = nums[i];
 			}
@@ -1019,7 +1020,7 @@ public:
 	int maxProfitII(vector<int>& prices) {
 		if (prices.size() < 2) return 0;
 		int profit = 0;
-		for (int i = 0; i < prices.size() - 1; i++) {
+		for (size_t i = 0; i < prices.size() - 1; i++) {
 			if (prices[i + 1] - prices[i] > 0) profit = profit + prices[i + 1] - prices[i];
 		}
 		return profit;
@@ -1153,10 +1154,24 @@ public:
 		myMap[5] = "V";
 		myMap[4] = "IV";
 		myMap[1] = "I";
-		vector<int> myArray{ 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+		vector<int> myArray;
+		myArray.push_back(1000);
+		myArray.push_back(900);
+		myArray.push_back(500);
+		myArray.push_back(400);
+		myArray.push_back(100);
+		myArray.push_back(90);
+		myArray.push_back(50);
+		myArray.push_back(40);
+		myArray.push_back(10);
+		myArray.push_back(9);
+		myArray.push_back(5);
+		myArray.push_back(4);
+		myArray.push_back(1);
+		//myArray = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
 
 		string romeNum;
-		for (int i = 0; i < myArray.size(); i++) {
+		for (size_t i = 0; i < myArray.size(); i++) {
 			int currLim = myArray[i];
 			while (num >= currLim) {
 				num = num - currLim;
@@ -1503,12 +1518,12 @@ public:
 		int n = static_cast<int>(words.size());
 		vector<vector<int>> elements(n, vector<int>(26, 0));
 		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < words[i].size(); j++) {
+			for (size_t j = 0; j < words[i].size(); j++) {
 				elements[i][words[i][j] - 'a']++;
 			}
 		}
 
-		int ans = 0;
+		size_t ans = 0;
 		bool noDuplicate;
 
 		for (int i = 0; i < n; i++) {
@@ -1525,7 +1540,7 @@ public:
 				}
 			}
 		}
-		return ans;
+		return static_cast<int>(ans);
 	}
 
 	vector<vector<int>> combinationSum3(int k, int n) {
@@ -1540,7 +1555,7 @@ public:
 		
 		for (int i = start; i <= 9; i++) {
 			if (sum - i < 0) break;
-			if (list.size() > k) break;
+			if (static_cast<int>(list.size()) > k) break;
 
 			list.push_back(i);
 			dfsCombinationSum3(result, i+1, sum - i, list, k);
@@ -1582,7 +1597,7 @@ public:
 			return;
 		}
 
-		for (int i = level; i < candidates.size(); i++) {
+		for (size_t i = level; i < candidates.size(); i++) {
 			if (target - candidates[i] < 0) break;
 			list.push_back(candidates[i]);
 			dfsCombinationSum(result, list, candidates, target - candidates[i], i);
@@ -1604,7 +1619,7 @@ public:
 			return;
 		}
 
-		for (int i = level; i < candidates.size(); i++) {
+		for (int i = level; i < static_cast<int>(candidates.size()); i++) {
 			if (i > level && candidates[i] == candidates[i - 1]) continue;
 			if (target - candidates[i] < 0) break;
 			list.push_back(candidates[i]);
@@ -1629,7 +1644,7 @@ public:
 		}
 
 		int curDigit = static_cast<int>(digits[dialed] - 48);
-		for (int i = 0; i < trans[curDigit].size(); i++) {
+		for (size_t i = 0; i < trans[curDigit].size(); i++) {
 			oneComb.push_back(trans[curDigit][i]);
 			dfsLetterCombinations(result, oneComb, trans, digits, dialed + 1);
 			oneComb.pop_back();
@@ -1672,7 +1687,7 @@ public:
 	}
 
 	void dfsSubsets(vector<vector<int>>& result, vector<int>& list, vector<int> nums, int level) {
-		for (int i = level; i < nums.size(); i++) {
+		for (size_t i = level; i < nums.size(); i++) {
 			list.push_back(nums[i]);
 			result.push_back(list);
 			dfsSubsets(result, list, nums, i + 1);
@@ -1691,7 +1706,7 @@ public:
 	}
 
 	void dfsSubsetsWithDup(vector<vector<int>>& result, vector<int>& list, vector<int> nums, int level) {
-		for (int i = level; i < nums.size(); i++) {
+		for (int i = level; i < static_cast<int>(nums.size()); i++) {
 			if (i > level && nums[i] == nums[i - 1]) continue;
 			list.push_back(nums[i]);
 			result.push_back(list);
@@ -1746,7 +1761,7 @@ public:
 		int currentMax = nums[0];
 		int currentMin = nums[0];
 
-		for (int i = 1; i < nums.size(); i++) {
+		for (size_t i = 1; i < nums.size(); i++) {
 			int temp = currentMax;
 			currentMax = max(max(currentMax*nums[i], currentMin*nums[i]), nums[i]);
 			currentMin = min(min(temp*nums[i], currentMin*nums[i]), nums[i]);
@@ -1758,8 +1773,8 @@ public:
 	int numIslands(vector<vector<char>>& grid) {
 		if (grid.empty() || grid.size() == 0 || grid[0].size() == 0) return 0;
 		int count = 0;
-		for (int i = 0; i < grid.size(); i++) {
-			for (int j = 0; j < grid[0].size(); j++) {
+		for (size_t i = 0; i < grid.size(); i++) {
+			for (size_t j = 0; j < grid[0].size(); j++) {
 				if (grid[i][j] != '1') continue; // either water or visited
 				else {
 					count++;
@@ -1771,7 +1786,7 @@ public:
 	}
 
 	void dfsIslands(vector<vector<char>>& grid, int i, int j) {
-		if (i < 0 || i >= grid.size() || j < 0 || j >= grid[0].size())  return;
+		if (i < 0 || i >= static_cast<int>(grid.size()) || j < 0 || j >= static_cast<int>(grid[0].size()))  return;
 		if (grid[i][j] != '1') return;  //either water or visited
 		grid[i][j] = '2';	// makr as visited
 		dfsIslands(grid, i - 1, j);
@@ -1798,10 +1813,350 @@ public:
 
 	int hIndex(vector<int>& citations) {
 		std::sort(citations.begin(), citations.end(), std::greater<int>());
-		for (int i = 0; i < citations.size(); i++) {
+		for (int i = 0; i < static_cast<int>(citations.size()); i++) {
 			if (i >= citations[i]) return i;
 		}
 		return static_cast<int>(citations.size());
+	}
+
+	string reverseString(string s) {
+		string result = "";
+		int i = static_cast<int>(s.length()) - 1;
+		while(i >= 0) {
+			result = result + s.at(i);
+			i--;
+		}
+		return result;
+    }
+
+	int getSum(int a, int b) {
+		if(b == 0) return a;
+		int sum = a^b;
+		int carry = (a&b)<<1;
+		return getSum(sum, carry);
+	}
+
+	bool canConstruct(string ransomNote, string magazine) {
+		int letter[26];
+		for (int k = 0; k < 26; k++) letter[k] = 0;
+		for(size_t i = 0; i < magazine.size(); i++) {
+			letter[magazine.at(i) - 'a']++;
+		}
+
+		for(size_t j = 0; j < ransomNote.size(); j++) {
+			if(--letter[ransomNote.at(j)- 'a'] < 0) return false;
+		}
+		return true;
+	}
+
+	string reverseVowels(string s) {
+		set<char> vowels;
+		vowels.insert('a');
+		vowels.insert('e');
+		vowels.insert('i');
+		vowels.insert('o');
+		vowels.insert('u');
+		vowels.insert('A');
+		vowels.insert('E');
+		vowels.insert('I');
+		vowels.insert('O');
+		vowels.insert('U');
+		
+		int left = 0;
+		int right = s.size() - 1;
+		while(left <= right) {
+			if( (vowels.find(s[left]) == vowels.end())) {
+				left++;
+				continue;
+			}
+
+			if((vowels.find(s[right]) == vowels.end())) {
+				right--;
+				continue;
+			}
+
+			char temp = s[left];
+			s[left] = s[right];
+			s[right] = temp;
+			left++;
+			right--;
+		}
+		return s;
+	}
+
+	bool isPowerOfFour(int num) {
+		if(num == 0) return false;
+		int power = static_cast<int>(log(num)/log(4));
+		if(pow(4, power) == num) return true;
+		else return false;
+	}
+
+	bool isPowerOfThree(int n) {
+		if(n == 0) return false;
+		int power = static_cast<int>(floor(log(n)/log(3)+0.5));
+		if(pow(3, power) == n) return true;
+		else return false;
+	}
+
+	vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+		set<int> s1(nums1.begin(), nums1.end());
+		set<int> s2;
+		for(int element : nums2) {
+			if(s1.count(element) > 0) s2.insert(element);
+		}
+		vector<int> result(s2.begin(), s2.end());
+		return result;
+	}
+
+	vector<int> intersect2(vector<int>& nums1, vector<int>& nums2) {
+		std::sort(nums1.begin(), nums1.end());
+		std::sort(nums2.begin(), nums2.end());
+		vector<int> result;
+		vector<int>::iterator iter1 = nums1.begin();
+		vector<int>::iterator iter2 = nums2.begin();
+		while(iter1 != nums1.end() && iter2 != nums2.end()) {
+			if(*iter1 > *iter2) iter2++;
+			else if(*iter1 < *iter2) iter1++;
+			else {
+				result.push_back(*iter1);
+				iter1++;
+				iter2++;
+			}
+		}
+		return result;
+	}
+
+	// This is a pre-defined API
+	int guess(int num);
+
+	int guessNumber(int n) {
+		int L = 1;
+		int R = n;
+        while(L<=R){
+            int mid = L + ((R - L) >> 1);
+            int res = guess(mid);
+            if(res == 0) return mid;
+            else if(res == 1)  L = mid + 1;
+            else R = mid - 1;
+        }
+        return L;
+	}
+
+	vector<int> countBits(int num) {
+		vector<int> result(num+1, 0);
+		for(int i = 0; i <= num; i++) {
+			result[i] = result[i>>1] + (i&1);
+		}
+		return result;
+	}
+
+	int countNumbersWithUniqueDigits(int n) {
+		n = min(n, 10);
+		vector<int> dp(n+1, 9);
+		dp[0] = 1;
+		for(int i = 2; i < n+1; i++) {
+			for(int k = 9; k >= 9 - i + 2; k--) {
+				dp[i] = dp[i]*k;
+			}
+		}
+		int ans = 0;
+		for(int j = 0; j < n+1; j++) ans = ans + dp[j];
+		return ans;
+	}
+
+	bool increasingTriplet(vector<int>& nums) {
+		int num1 = INT_MAX;
+		int num2 = INT_MAX;
+		for(int num : nums) {
+			if(num <= num1) num1 = num;
+			else if(num <= num2) num2 = num;
+			else return true;
+		}
+		return false;
+	}
+
+	int integerBreak(int n) {
+		if( n == 2 || n == 3) return n - 1;
+		int result = 1;
+		while(n > 4) {
+			result = result * 3;
+			n = n - 3;
+		}
+		return result*n;
+	}
+
+	bool isPerfectSquare(int num) {
+		long long low = 1;
+		long long high = num/2 + 1;
+		long long mid;
+		while(low <= high) {
+			mid = (low + high)/2;
+			if(num == mid*mid) return true;
+			else if(num > mid*mid) low = mid + 1;
+			else high = mid - 1;
+		}
+		return false;
+	}
+
+	vector<int> majorityElementII(vector<int>& nums) {
+		vector<int> result;
+		int m1 = NULL;
+		int m2 = NULL;
+		int c1 = 0;
+		int c2 = 0;
+		for(int i : nums) {
+			if(i == m1) c1++;
+			else if(i == m2) c2++;
+			else if(c1 == 0) {
+				m1 = i;
+				c1 = 1;
+			}
+			else if(c2 == 0) {
+				m2 = i;
+				c2 = 1;
+			}
+			else {
+				c1--;
+				c2--;
+			}
+		}
+		c1 = 0;
+		c2 = 0;
+		for(int i : nums) {
+			if(i == m1) c1++;
+			else if(i == m2) c2++;
+		}
+		if(c1 > static_cast<int>(nums.size())/3) result.push_back(m1);
+		if(c2 > static_cast<int>(nums.size())/3) result.push_back(m2);
+		return result;
+	}
+
+	vector<int> twoSum2(vector<int>& numbers, int target) {
+		int left = 0;
+		int right = static_cast<int>(numbers.size()) - 1;
+		long long tempSum = 0;
+		vector<int> result;
+		while(left <= right) {
+			tempSum = numbers[left] + numbers[right];
+			if(tempSum == static_cast<long long>(target)) {
+				result.push_back(left+1);
+				result.push_back(right+1);
+				return result;
+			}
+			else if(tempSum < static_cast<long long>(target)) {
+				left++;
+			}
+			else right--;
+		}
+		return result;
+	}
+
+	vector<int> twoSum(vector<int>& nums, int target) {
+		map<int, size_t> myMap;
+		vector<int> result;
+		for(size_t i = 0; i < nums.size(); i++) {
+			int diff = target - nums[i];
+			if(myMap.find(diff) != myMap.end()) {
+				result.push_back(myMap[diff]);
+				result.push_back(i);
+				return result;
+			}
+			myMap.emplace(nums[i], i);
+		}
+		return result;
+	}
+
+	int rangeBitwiseAnd(int m, int n) {
+		int d = INT_MAX;
+		while((m&d) != (n&d)) {
+			d = d<<1;
+		}
+		return m&d;
+	}
+
+	int wiggleMaxLength(vector<int>& nums) {
+		if(nums.empty()) return 0;
+		int ans = 1;
+		int n = static_cast<int>(nums.size());
+		for(int cur = 1, prev = 0; cur < n; prev = cur, cur++) {
+			if(nums[cur] > nums[prev]) {
+				ans++;
+				while((cur + 1 < n) && (nums[cur+1] >= nums[cur])) cur++; 
+			}
+			else if(nums[cur] < nums[prev]) {
+				ans++;
+				while((cur + 1 < n) && (nums[cur+1] <= nums[cur])) cur++;
+			}
+		}
+		return ans;
+	}
+
+	ListNode* insertionSortList(ListNode* head) {
+		if(head == NULL || head->next == NULL) return head;
+		ListNode* fakeHead = new ListNode(0);
+		ListNode* cur = head;
+		while(cur != NULL) {
+			ListNode* next = cur->next;
+			ListNode* pre = fakeHead;
+			while(pre->next != NULL && pre->next->val < cur->val) {
+				pre = pre->next;
+			}
+			cur->next = pre->next;
+			pre->next = cur;
+			cur = next;
+		}
+		return fakeHead->next;
+	}
+
+	int findDuplicate(vector<int>& nums) {
+		int low = 1;
+		int high = static_cast<int>(nums.size()) - 1;
+		while(low < high) {
+			int mid = (low+high)/2;
+			int c = 0;
+
+			for(int i : nums) {
+				if(i <= mid) c++;
+			}
+
+			if(c > mid) high = mid;
+			else low = mid + 1;
+		}
+		return low;
+	}
+
+	int coinChange(vector<int>& coins, int amount) {
+		vector<int> dp(amount+1, INT_MAX -1);
+		dp[0] = 0;
+		for(int i = 1; i < amount+1; i++) {
+			for(size_t j = 0; j < coins.size(); j++) {
+				if(coins[j] <= i) dp[i] = min(dp[i], dp[i - coins[j]] + 1);
+			}
+		}
+		return dp[amount] > amount ? -1 : dp[amount];
+	}
+
+	bool canJump(vector<int>& nums) {
+		int maxDist = 0;
+		int n = static_cast<int>(nums.size());
+		for(int i = 0; i <= maxDist && maxDist < n - 1; i++) {
+			if(maxDist < i + nums[i]) maxDist = i + nums[i];
+		}
+		return maxDist >= n-1;
+	}
+
+	int lengthOfLongestSubstring(string s) {
+		size_t maxLen = 0;
+		map<char, size_t> myMap;
+		for(size_t i = 0; i < s.size(); i++) {
+			if(myMap.find(s[i]) == myMap.end()) myMap.emplace(s[i], i);
+			else {
+				maxLen = max(maxLen, myMap.size());
+				i = myMap[s[i]];
+				myMap.clear();
+			}
+		}
+		return max(maxLen, myMap.size());
 	}
 };
 
