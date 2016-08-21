@@ -616,8 +616,8 @@ public:
 	}
 
 	bool containsNearbyDuplicate(vector<int>& nums, int k) {
-		map<int, int> myMap =map<int, int>();
-		for (size_t i = 0; i < nums.size(); i++) {
+		map<int, int> myMap;
+		for (int i = 0; i < static_cast<int>(nums.size()); i++) {
 			if (myMap.find(nums[i]) == myMap.end()) {
 				myMap[nums[i]] = i;
 			}
@@ -1597,7 +1597,7 @@ public:
 			return;
 		}
 
-		for (size_t i = level; i < candidates.size(); i++) {
+		for (int i = level; i < static_cast<int>(candidates.size()); i++) {
 			if (target - candidates[i] < 0) break;
 			list.push_back(candidates[i]);
 			dfsCombinationSum(result, list, candidates, target - candidates[i], i);
@@ -1687,7 +1687,7 @@ public:
 	}
 
 	void dfsSubsets(vector<vector<int>>& result, vector<int>& list, vector<int> nums, int level) {
-		for (size_t i = level; i < nums.size(); i++) {
+		for (int i = level; i < static_cast<int>(nums.size()); i++) {
 			list.push_back(nums[i]);
 			result.push_back(list);
 			dfsSubsets(result, list, nums, i + 1);
@@ -1773,8 +1773,8 @@ public:
 	int numIslands(vector<vector<char>>& grid) {
 		if (grid.empty() || grid.size() == 0 || grid[0].size() == 0) return 0;
 		int count = 0;
-		for (size_t i = 0; i < grid.size(); i++) {
-			for (size_t j = 0; j < grid[0].size(); j++) {
+		for (int i = 0; i < static_cast<int>(grid.size()); i++) {
+			for (int j = 0; j < static_cast<int>(grid[0].size()); j++) {
 				if (grid[i][j] != '1') continue; // either water or visited
 				else {
 					count++;
@@ -1863,7 +1863,7 @@ public:
 		vowels.insert('U');
 		
 		int left = 0;
-		int right = s.size() - 1;
+		int right = static_cast<int>(s.size()) - 1;
 		while(left <= right) {
 			if( (vowels.find(s[left]) == vowels.end())) {
 				left++;
@@ -2052,9 +2052,9 @@ public:
 	}
 
 	vector<int> twoSum(vector<int>& nums, int target) {
-		map<int, size_t> myMap;
+		map<int, int> myMap;
 		vector<int> result;
-		for(size_t i = 0; i < nums.size(); i++) {
+		for(int i = 0; i < static_cast<int>(nums.size()); i++) {
 			int diff = target - nums[i];
 			if(myMap.find(diff) != myMap.end()) {
 				result.push_back(myMap[diff]);
@@ -2146,17 +2146,17 @@ public:
 	}
 
 	int lengthOfLongestSubstring(string s) {
-		size_t maxLen = 0;
-		map<char, size_t> myMap;
-		for(size_t i = 0; i < s.size(); i++) {
+		int maxLen = 0;
+		map<char, int> myMap;
+		for(int i = 0; i < static_cast<int>(s.size()); i++) {
 			if(myMap.find(s[i]) == myMap.end()) myMap.emplace(s[i], i);
 			else {
-				maxLen = max(maxLen, myMap.size());
+				maxLen = max(maxLen, static_cast<int>(myMap.size()));
 				i = myMap[s[i]];
 				myMap.clear();
 			}
 		}
-		return max(maxLen, myMap.size());
+		return max(maxLen, static_cast<int>(myMap.size()));
 	}
 };
 
