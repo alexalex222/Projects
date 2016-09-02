@@ -47,6 +47,41 @@ struct TreeLinkNode {
 	TreeLinkNode(int x) : val(x), left(NULL), right(NULL), next(NULL) {}
 };
 
+struct Interval {
+	int start;
+	int end;
+	Interval() : start(0), end(0) {}
+	Interval(int s, int e) : start(s), end(e) {}
+};
+
+// This is the interface that allows for creating nested lists.
+// You should not implement it, or speculate about its implementation
+class NestedInteger {
+public:
+	// Constructor initializes an empty nested list.
+	NestedInteger();
+
+	// Constructor initializes a single integer.
+	NestedInteger(int value);
+
+	// Return true if this NestedInteger holds a single integer, rather than a nested list.
+	bool isInteger() const;
+
+    // Return the single integer that this NestedInteger holds, if it holds a single integer
+    // The result is undefined if this NestedInteger holds a nested list
+    int getInteger() const;
+
+	// Set this NestedInteger to hold a single integer.
+	void setInteger(int value);
+ 
+	// Set this NestedInteger to hold a nested list and adds a nested integer to it.
+	void add(const NestedInteger &ni);
+
+	// Return the nested list that this NestedInteger holds, if it holds a nested list
+	// The result is undefined if this NestedInteger holds a single integer
+	const vector<NestedInteger> &getList() const;
+};
+
 class Solution {
 public:
 	int addDigits(int num) {
@@ -2157,6 +2192,415 @@ public:
 			}
 		}
 		return max(maxLen, static_cast<int>(myMap.size()));
+	}
+
+	bool canPermutePalindrome(string s) {
+		vector<int> isEven(256, 0);
+		int oddCount = 0;
+		for(int i = 0; i < static_cast<int>(s.size()); i++) {
+			isEven[s[i]]++;
+		}
+		for(int i : isEven) {
+			if(i/2*2 != i) oddCount++;
+		}
+		return oddCount <= 1 ? true : false;
+	}
+
+	vector<string> generatePossibleNextMoves(string s) {
+		vector<string> result;
+		for(int i = 0; i + 1 < static_cast<int>(s.size()); i++) {
+			if(s[i] == '+' && s[i+1] == '+') {
+				s[i] = '-';
+				s[i+1] = '-';
+				result.push_back(s);
+				s[i] = '+';
+				s[i+1] = '+';
+			}
+		}
+		return result;
+	}
+
+	int shortestDistance(vector<string>& words, string word1, string word2) {
+		int dist = INT_MAX;
+		int pos1 = -1;
+		for(int i = 0; i < static_cast<int>(words.size()); i++) {
+			if(words[i].compare(word1) == 0 || words[i].compare(word2) == 0) {
+				if(pos1 == -1) {
+					pos1 = i;
+				}
+				else {
+					if(words[i].compare(words[pos1]) != 0) {
+						dist = min(abs(i - pos1), dist);
+						pos1 = i;
+					}
+					else pos1 = i;
+				}
+			}
+		}
+		return dist;
+	}
+
+	bool canAttendMeetings(vector<Interval>& intervals) {
+		sort(intervals.begin(), intervals.end(), compareInterval);
+		for(int i = 0; i < static_cast<int>(intervals.size()) - 1; i++) {
+			if(intervals[i].end > intervals[i+1].start) return false;
+		}
+		return true;
+	}
+
+	static bool compareInterval(Interval& interval1, Interval& interval2) {
+		return interval1.start < interval2.start;
+	}
+
+	int closestValue(TreeNode* root, double target) {
+		if(!root) return INT_MAX;
+		if(!root->left && !root->right) return root->val;
+		int left = closestValue(root->left, target);
+		int right = closestValue(root->right, target);
+		double od = abs(root->val - target);
+		double ld = abs(left - target);
+		double rd = abs(right - target);
+		if(od < rd) return od < ld ? root->val : left;
+		else return rd < ld ? right : left;
+	}
+
+	bool isStrobogrammatic(string num) {
+		map<char, char> myRule;
+		myRule.emplace('0', '0');
+		myRule.emplace('1', '1');
+		myRule.emplace('6', '9');
+		myRule.emplace('8', '8');
+		myRule.emplace('9', '6');
+		int n = static_cast<int>(num.size());
+		if((n/2*2 == n) || (n/2*2 != n && (num[n/2] == '0' || num[n/2] == '1' || num[n/2] == '8'))) 
+		{ 
+			for(int i = n/2-1; i >= 0; i--) {
+				if(myRule.find(num[i]) != myRule.end()) {
+					if(myRule[num[i]] == num[n-1-i]) continue;
+					else return false;
+				}
+				else return false;
+			}
+		}
+		else return false;
+		return true;
+	}
+
+	vector<vector<int>> findLeaves(TreeNode* root) {
+		vector<vector<int>> result;
+		vector<int> leaves;
+		while(root) {
+			root = removeLeaves(root, leaves);
+			result.push_back(leaves);
+		}
+		return result;
+	}
+
+	TreeNode* removeLeaves(TreeNode* root, vector<int>& leaves) {
+		if(!root) return NULL;
+		if(!root->left && !root->right) {
+			leaves.push_back(root->val);
+			root = NULL;
+			return root;
+		}
+		root->left = removeLeaves(root->left, leaves);
+		root->right = removeLeaves(root->right, leaves);
+		return root;
+	}
+
+	void wiggleSort(vector<int>& nums) {
+		int n = static_cast<int>(nums.size());
+		for(int i = 1; i < n; i++) {
+			if((i%2 == 1 && nums[i] < nums[i-1]) || (i%2 == 0 && nums[i] > nums[i-1])) {
+				int temp = nums[i];
+				nums[i] = nums[i-1];
+				nums[i-1] = temp;
+			}
+		}
+	}
+
+	ListNode* plusOne(ListNode* head) {	
+		stack<ListNode*> myStack;
+		ListNode* cur = head;
+		while(cur) {
+			myStack.push(cur);
+			cur = cur->next;
+		}
+		int carry = 1;
+		while(!myStack.empty() && carry > 0) {
+			ListNode* t = myStack.top();
+			myStack.pop();
+			int sum = t->val + carry;
+			t->val = sum%10;
+			carry = sum/10;
+		}
+
+		if(carry) {
+			ListNode* fakeHead = new ListNode(1);
+			fakeHead->next = head;
+			head = fakeHead;
+		}
+		return head;
+	}
+
+	vector<vector<int>> multiply(vector<vector<int>>& A, vector<vector<int>>& B) {
+		int l = static_cast<int>(A.size());
+		int m = static_cast<int>(B.size());
+		int n = static_cast<int>(B[0].size());
+		vector<vector<int>> C(l, vector<int>(n, 0));
+		for(int i = 0; i < l; i++) {
+			for(int j = 0; j < m; j++) {
+				if(A[i][j]) {
+					for(int k = 0; k < n; k++) C[i][k] += A[i][j]*B[j][k];
+				}
+			}
+		}
+		return C;
+	}
+
+	int shortestDistance3(vector<string>& words, string word1, string word2) {
+		int dist = INT_MAX;
+		int pos1 = -1;
+		for(int i = 0; i < static_cast<int>(words.size()); i++) {
+			if(words[i].compare(word1) == 0 || words[i].compare(word2) == 0) {
+				if(pos1 == -1) {
+					pos1 = i;
+				}
+				else {
+					if(words[i].compare(words[pos1]) != 0 && word1.compare(word2) != 0) {
+						dist = min(abs(i - pos1), dist);
+						pos1 = i;
+					}
+					else if(words[i].compare(words[pos1]) == 0 && word1.compare(word2) == 0) {
+						dist = min(abs(i - pos1), dist);
+						pos1 = i;
+					}
+					pos1 = i;
+				}
+			}
+		}
+		return dist;
+	}
+
+	int countComponents(int n, vector<pair<int, int>>& edges) {
+		vector<set<int>> g;
+		for(pair<int, int> edge : edges) {
+			if(g.empty()) {
+				set<int> tempGraph;
+				tempGraph.emplace(edge.first);
+				tempGraph.emplace(edge.second);
+				g.push_back(tempGraph);
+			}
+			else {
+				for(set<int>& curGraph : g) {
+					if(curGraph.find(edge.first) == curGraph.end() && curGraph.find(edge.second) == curGraph.end()) {
+						set<int> tempGraph;
+						tempGraph.emplace(edge.first);
+						tempGraph.emplace(edge.second);
+						g.push_back(tempGraph);
+					}
+					else {
+						if(curGraph.find(edge.first) == curGraph.end()) curGraph.emplace(edge.first);
+						if(curGraph.find(edge.second) == curGraph.end()) curGraph.emplace(edge.second);
+					}
+				}
+			}
+		}
+		return static_cast<int>(g.size());
+	}
+
+	int threeSumSmaller(vector<int>& nums, int target) {
+		sort(nums.begin(), nums.end());
+		int cnt = 0;
+		int n = static_cast<int>(nums.size());
+		for(int i = 0; i < n - 2; i++) {
+			int j = i + 1;
+			int k = n - 1;
+			while(j < k) {
+				if(nums[i] + nums[j] + nums[k] >= target) k--;
+				else {
+					cnt = cnt + (k - j);
+					j++;
+				}
+			}
+		}
+		return cnt;
+	}
+
+	vector<int> sortTransformedArray(vector<int>& nums, int a, int b, int c) {
+		int n = static_cast<int>(nums.size());
+		vector<int> result(n, 0);
+		int i = 0;
+		int j = n - 1;
+		int idx = a >= 0 ? n - 1 : 0;
+		while(i <= j) {
+			if(a >= 0) {
+				result[idx--] = helpTransformedArray(nums[i], a, b, c) >= helpTransformedArray(nums[j], a, b, c) ?  helpTransformedArray(nums[i++], a, b, c) : helpTransformedArray(nums[j--], a, b, c);
+			}
+			else {
+				result[idx++] = helpTransformedArray(nums[i], a, b, c) <= helpTransformedArray(nums[j], a, b, c) ?  helpTransformedArray(nums[i++], a, b, c) : helpTransformedArray(nums[j--], a, b, c);
+			}
+		}
+		return result;
+	}
+
+	int helpTransformedArray(int x, int a, int b, int c) {
+		return a*x*x + b*x +c;
+	}
+
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+		int carry = 0;
+		ListNode* p1 = l1;
+		ListNode* p2 = l2;
+		int len1 = 0;
+		int len2 = 0;
+		while(p1) {
+			len1++;
+			p1 = p1->next;
+		}
+		while(p2) {
+			len2++;
+			p2 = p2->next;
+		}
+		if(len1 < len2) {
+			p1 = l2;
+			p2 = l1;
+		}
+		else {
+			p1 = l1;
+			p2 = l2;
+		}
+		int a;
+		int b;
+		while(p1 || p2) {
+			if(p2) {
+				a = p1->val;
+				b = p2->val;
+				p1->val = (a + b + carry)%10;
+				carry = (a + b + carry)/10;
+				p1 = p1->next;
+				p2 = p2->next;
+			}
+			else {
+				a = p1->val;
+				p1->val = (a + carry)%10;
+				carry = (a + carry)/10;
+				p1 = p1->next;
+			}
+		}
+		if(carry == 1) {
+			if(len1 < len2) p1 = l2;
+			else p1 = l1;
+			while(p1->next) {
+				p1 = p1->next;
+			}
+			p1->next = new ListNode(1);
+		}
+		if(len1 < len2) return l2;
+		else return l1;
+	}
+
+	bool knows(int a, int b);
+
+	int findCelebrity(int n) {
+		int celebrity = 0;
+		for(int i = 1; i < n; i++) {
+			if(knows(celebrity, i)) celebrity = i;
+		}
+
+		for(int i = 0; i < n; i++) {
+			if(i != celebrity && (knows(celebrity, i) || !knows(i, celebrity))) return -1;
+		}
+		return celebrity;
+	}
+
+	void reverseWords(string &s) {
+		int i = 0;
+		int j = 0;
+		int l = 0;
+		int len = s.length();
+		int wordCount = 0;
+		while(true) {
+			while(i < len && s[i] == ' ') {
+				i++;
+			}
+			if(i == len) break;
+			if(wordCount > 0) {
+				s[j] = ' ';
+				j++;
+			}
+			l = j;
+			while(i < len && s[i] != ' ') {
+				s[j] = s[i];
+				i++;
+				j++;
+			}
+			reverseWord(s, l, j-1);
+			wordCount++;
+		}
+		s.resize(j);
+		reverseWord(s, 0, j-1);
+	}
+
+	void reverseWord(string &s, int i, int j) {
+		while(i < j) {
+			char t = s[i];
+			s[i++] = s[j];
+			s[j--] = t;
+		}
+	}
+
+	ListNode* reverseBetween(ListNode* head, int m, int n) {
+		ListNode* cur = head;
+		stack<ListNode*> myStack;
+		int a = 1;
+		while (a < m)
+		{
+			cur = cur->next;
+			a++;
+		}
+		while(a <= n) {
+			myStack.push(cur);
+			cur = cur->next;
+			a++;
+		}
+		ListNode* rest = cur;
+		a = 1;
+		ListNode* fakeHead = new ListNode(0);
+		fakeHead->next = head;
+		cur = fakeHead;
+		while(a < m) {
+			cur = cur->next;
+			a++;
+		}
+		while(!myStack.empty()) {
+			ListNode* t = myStack.top();
+			myStack.pop();
+			cur->next = t;
+			cur = cur->next;
+		}
+		cur->next = rest;
+		return fakeHead->next;
+	}
+
+	char findTheDifference(string s, string t) {
+		unordered_map<char, int> dic;
+		for(int i = 0; i < static_cast<int>(s.length()); i++) {
+			if(dic.find(s[i]) == dic.end()) {
+				dic.emplace(s[i], 1);
+			}
+			else dic[s[i]]++;
+		}
+		int j;
+		for(j = 0; j < static_cast<int>(t.length()); j++) {
+			if(dic.find(t[j]) == dic.end()) {
+				return t[j];
+			}
+			else if(--dic[t[j]] < 0) {
+				return t[j];
+			}
+		}
+		return t[j];
 	}
 };
 
