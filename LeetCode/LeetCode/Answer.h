@@ -2518,7 +2518,7 @@ public:
 		int i = 0;
 		int j = 0;
 		int l = 0;
-		int len = s.length();
+		int len = static_cast<int>(s.length());
 		int wordCount = 0;
 		while(true) {
 			while(i < len && s[i] == ' ') {

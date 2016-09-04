@@ -1,11 +1,13 @@
 #include <iostream>
 #include <vector>
+
+using namespace std;
 #include "Answer.h"
 #include "QueueStack.h"
 #include "StackQueue.h"
 #include "RangeSum.h"
+#include "RandomizedSet.h"
 
-//using namespace System;
 
 int main() {
 	Solution mySolution = Solution();

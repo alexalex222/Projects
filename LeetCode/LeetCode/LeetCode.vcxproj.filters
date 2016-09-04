@@ -35,5 +35,8 @@
     <ClInclude Include="MinStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RandomizedSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
