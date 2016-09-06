@@ -32,12 +32,12 @@ int main() {
 	vector<vector<char>> myMap(1, vector<char>(1, '1'));
 	mySolution.numIslands(myMap);
 	
-	string a = "abc";
+	string a = "9223372036854775809";
 	string* c = new string("abc");
 	string b = "a";
 	int numr = 28;
 
-	string s = mySolution.convertToTitle(28);
+	int s = mySolution.myAtoi(a);
 
 
 	std::cout << s << std::endl;

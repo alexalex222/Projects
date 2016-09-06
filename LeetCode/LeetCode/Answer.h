@@ -1023,7 +1023,40 @@ public:
 	}
 
 	int myAtoi(string str) {
-		return 0;
+		int len = static_cast<int>(str.size());
+		int sign = 1;
+		long long result = 0;
+		int i = 0;
+		bool startDigSeq = false;
+		while (i < len) {
+			while (str[i] == ' ' && !startDigSeq) i++;
+			if (str[i] == '-' && !startDigSeq) {
+				sign = -1;
+				i++;
+				startDigSeq = true;
+			}
+			else if (str[i] == '+' && !startDigSeq) {
+				sign = 1;
+				i++;
+				startDigSeq = true;
+			}
+			else if (str[i] >= '0' && str[i] <= '9' && !startDigSeq) {
+				result = result * 10 + (str[i] - '0');
+				if (result > INT_MAX) break;
+				i++;
+				startDigSeq = true;
+			}
+			else if (str[i] >= '0' && str[i] <= '9' && startDigSeq) {
+				result = result * 10 + (str[i] - '0');
+				if (result > INT_MAX) break;
+				i++;
+			}
+			else break;
+		}
+		result = result * sign;
+		if (result > INT_MAX) return INT_MAX;
+		if (result < INT_MIN) return INT_MIN;
+		return static_cast<int>(result);
 	}
 
 	int singleNumber(vector<int>& nums) {
@@ -2602,6 +2635,35 @@ public:
 		}
 		return t[j];
 	}
+
+	int firstUniqChar(string s) {
+		set<char> repeat;
+		char cur;
+		int len = static_cast<int>(s.size());
+		for (int i = 0; i < len; i++) {
+			cur = s[i];
+			if (repeat.find(cur) == repeat.end()) {
+				if (i == len - 1) {
+					return i;
+				}
+				else {
+					if (s.find(cur, i + 1) != string::npos) {
+						repeat.emplace(cur);
+					}
+					else {
+						return i;
+					}
+				}
+			}
+			else {
+				continue;
+			}
+		}
+		return -1;
+	}
+
+
+
 };
 
 #endif
