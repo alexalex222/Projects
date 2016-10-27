@@ -152,6 +152,8 @@
   <ItemGroup>
     <ClInclude Include="Answer.h" />
     <ClInclude Include="MinStack.h" />
+    <ClInclude Include="NumArray.h" />
+    <ClInclude Include="NumMatrix.h" />
     <ClInclude Include="QueueStack.h" />
     <ClInclude Include="RandomizedSet.h" />
     <ClInclude Include="RangeSum.h" />
