@@ -12,16 +12,20 @@
 #include <climits>
 #include <functional>
 #include <stdint.h>
+#include <unordered_set>
+#include <bitset>
 
 using std::vector;
 using std::string;
 using std::set;
+using std::unordered_set;
 using std::map;
 using std::unordered_map;
 using std::queue;
 using std::stack;
 using std::max;
 using std::min;
+using std::bitset;
 
 #ifndef ANSWER_H
 #define ANSWER_H
@@ -81,6 +85,65 @@ public:
 	// The result is undefined if this NestedInteger holds a single integer
 	const vector<NestedInteger> &getList() const;
 };
+
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * class NestedInteger {
+ *   public:
+ *     // Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     bool isInteger() const;
+ *
+ *     // Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // The result is undefined if this NestedInteger holds a nested list
+ *     int getInteger() const;
+ *
+ *     // Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // The result is undefined if this NestedInteger holds a single integer
+ *     const vector<NestedInteger> &getList() const;
+ * };
+ */
+class NestedIterator {
+public:
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        
+    }
+
+    int next() {
+        
+    }
+
+    bool hasNext() {
+        
+    }
+};
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i(nestedList);
+ * while (i.hasNext()) cout << i.next();
+ */
+
+struct Point {
+	int x;
+	int y;
+	Point() : x(0), y(0) {}
+	Point(int a, int b) : x(a), y(b) {}
+};
+
+struct RandomListNode {
+	int label;
+	RandomListNode *next, *random;
+	RandomListNode(int x) : label(x), next(NULL), random(NULL) {}
+};
+
+struct GraphNode {
+	string destination;
+	double distance;
+	GraphNode(string dest, double dist) : destination(dest), distance(dist) {}
+};
+
+
 
 class Solution {
 public:
@@ -175,8 +238,9 @@ public:
 	}
 
 	bool isAnagram(string s, string t) {
-		auto lenS = s.length();
-		auto lenT = t.length();
+		size_t lenS = s.length();
+		size_t lenT = t.length();
+		if(lenT == 0) return false;
 		if (lenS != lenT) return false;
 
 		vector<int> count(26, 0);
@@ -189,6 +253,35 @@ public:
 
 		}
 		return true;
+	}
+
+	vector<vector<string>> groupAnagrams(vector<string>& strs){
+		vector<vector<string>> result;
+		for(string str : strs) {
+			if(result.size() == 0) {
+				vector<string> anagrams;
+				anagrams.push_back(str);
+				result.push_back(anagrams);
+			}
+			else {
+				for(size_t i = 0; i < result.size(); i++) {
+					if(isAnagram(result[i][0], str)) {
+						for(string s : result[i]) {
+							if(s == str) break;
+						}
+						result[i].push_back(str);
+						break;
+					}
+					if(i == result.size() - 1) {
+						vector<string> anagrams;
+						anagrams.push_back(str);
+						result.push_back(anagrams);
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	int romanToInt(string s) {
@@ -296,6 +389,16 @@ public:
 			current->next = l2;
 		}
 		return result->next;
+	}
+
+	ListNode* mergeKLists(vector<ListNode*>& lists) {
+		int len = static_cast<int>(lists.size());
+		if(len < 1) return NULL;
+		ListNode* result = lists[0];
+		for(int i = 1; i < len; i++) {
+			result = mergeTwoLists(result, lists[i]);
+		}
+		return result;
 	}
 
 	bool isBalanced(TreeNode* root) {
@@ -1023,40 +1126,7 @@ public:
 	}
 
 	int myAtoi(string str) {
-		int len = static_cast<int>(str.size());
-		int sign = 1;
-		long long result = 0;
-		int i = 0;
-		bool startDigSeq = false;
-		while (i < len) {
-			while (str[i] == ' ' && !startDigSeq) i++;
-			if (str[i] == '-' && !startDigSeq) {
-				sign = -1;
-				i++;
-				startDigSeq = true;
-			}
-			else if (str[i] == '+' && !startDigSeq) {
-				sign = 1;
-				i++;
-				startDigSeq = true;
-			}
-			else if (str[i] >= '0' && str[i] <= '9' && !startDigSeq) {
-				result = result * 10 + (str[i] - '0');
-				if (result > INT_MAX) break;
-				i++;
-				startDigSeq = true;
-			}
-			else if (str[i] >= '0' && str[i] <= '9' && startDigSeq) {
-				result = result * 10 + (str[i] - '0');
-				if (result > INT_MAX) break;
-				i++;
-			}
-			else break;
-		}
-		result = result * sign;
-		if (result > INT_MAX) return INT_MAX;
-		if (result < INT_MIN) return INT_MIN;
-		return static_cast<int>(result);
+		return 0;
 	}
 
 	int singleNumber(vector<int>& nums) {
@@ -2215,13 +2285,17 @@ public:
 
 	int lengthOfLongestSubstring(string s) {
 		int maxLen = 0;
-		map<char, int> myMap;
+		unordered_set<char> myMap;
+		int start = 0;
 		for(int i = 0; i < static_cast<int>(s.size()); i++) {
-			if(myMap.find(s[i]) == myMap.end()) myMap.emplace(s[i], i);
+			if(myMap.find(s[i]) == myMap.end()) myMap.insert(s[i]);
 			else {
 				maxLen = max(maxLen, static_cast<int>(myMap.size()));
-				i = myMap[s[i]];
-				myMap.clear();
+				while(start < i && s[start] != s[i]) {
+					myMap.erase(s[start]);
+					start++;
+				}
+				start++;
 			}
 		}
 		return max(maxLen, static_cast<int>(myMap.size()));
@@ -2282,7 +2356,48 @@ public:
 	}
 
 	static bool compareInterval(Interval& interval1, Interval& interval2) {
-		return interval1.start < interval2.start;
+		if(interval1.start == interval2.start) {
+			return interval1.end < interval2.end;
+		}
+		else {
+			return interval1.start < interval2.start;
+		}
+		
+	}
+
+	vector<Interval> merge(vector<Interval>& intervals) {
+		vector<Interval> result;
+		sort(intervals.begin(), intervals.end(), compareInterval);
+		int i = 0;		
+		while(i < static_cast<int>(intervals.size())) {
+			Interval currItv = intervals[i];
+			int j = i + 1;
+			while(j < static_cast<int>(intervals.size())) {
+				Interval nextItv = intervals[j];
+				if(nextItv.start <= currItv.end) {
+					currItv.end = max(currItv.end, nextItv.end);
+					j++;
+				}
+				else {
+					i = j;
+					if(j == static_cast<int>(intervals.size()) - 1) {
+						result.push_back(currItv);
+						result.push_back(nextItv);
+						return result;
+					}
+					break;
+				}
+			}
+			result.push_back(currItv);
+			i = j;
+		}
+		return result;
+	}
+
+	vector<Interval> insert(vector<Interval>& intervals, Interval newInterval) {
+		intervals.push_back(newInterval);
+		sort(intervals.begin(), intervals.end(), compareInterval);
+		return merge(intervals);
 	}
 
 	int closestValue(TreeNode* root, double target) {
@@ -2442,6 +2557,114 @@ public:
 		return static_cast<int>(g.size());
 	}
 
+	int threeSumClosest(vector<int>& nums, int target) {
+		int result;
+		sort(nums.begin(), nums.end());
+		int minDiff = INT_MAX;
+		int n = static_cast<int>(nums.size());
+		for(int i = 0; i < n - 2; i++) {
+			int j = i + 1;
+			int k = n - 1;
+			while(j < k) {
+				int sum = nums[i] + nums[j] + nums[k];
+				int diff = abs(target - sum);
+				if(sum == target) {
+					return sum;
+				}
+				else if(sum > target) {
+					k--;
+				}
+				else {
+					j++;
+				}
+				if(diff < minDiff) {
+					minDiff = diff;
+					result = sum;
+				}
+			}
+		}
+		return result;
+	}
+
+	vector<vector<int>> threeSum(vector<int>& nums, int target) {
+		vector<vector<int>> result;
+		vector<int> oneSolution;
+		sort(nums.begin(), nums.end());
+		int n = static_cast<int>(nums.size());
+		for(int i = 0; i < n - 2; i++) {
+			if (i > 0 && nums[i] == nums[i - 1]) continue;
+			int j = i + 1;
+			int k = n - 1;
+			while(j < k) {
+				if(nums[i] + nums[j] + nums[k] == target) {
+					oneSolution.push_back(nums[i]);
+					oneSolution.push_back(nums[j]);
+					oneSolution.push_back(nums[k]);
+					result.push_back(oneSolution);
+					oneSolution.clear();
+					while(j < k && nums[j] == nums[j+1]) j++;
+					while(j < k && nums[k] == nums[k-1]) k--;
+					k--;
+					j++;
+				}
+				else if (nums[i] + nums[j] + nums[k] > target){
+					k--;
+				}
+				else {
+					j++;
+				}
+			}
+		}
+		return result;
+    }
+
+	vector<vector<int>> fourSum(vector<int>& nums, int target) {
+		vector<vector<int>> result;
+		vector<int> comb;
+		sort(nums.begin(), nums.end());
+		nSum(nums, target, 4, comb, result);
+		return result;	
+	}
+	
+	void nSum(vector<int>& nums, int target, int N,  vector<int>& comb, vector<vector<int>>& result) {
+		if(static_cast<int>(nums.size()) < N || target < nums[0]*N || target > nums.back()*N) {
+			return;		// early termination
+		}
+		if(N == 2) {
+			int left = 0;
+			int right = static_cast<int>(nums.size());
+			while(left < right) {
+				int s = nums[left] + nums[right];
+				if(s == target) {
+					comb.push_back(nums[left]);
+					comb.push_back(nums[right]);
+					result.push_back(comb);
+					comb.clear();
+					while(left < right && nums[left+1] == nums[left]) {
+						left++;
+					}
+					left++;
+					right--;
+				}
+				else if(s < target) {
+					left++;
+				}
+				else {
+					right--;
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < static_cast<int>(nums.size()) - N + 1; i++) {
+				if(i != 0 && nums[i] == nums[i-1]) continue;
+				vector<int> nums_new;
+				nums_new.assign(nums.begin() + i + 1, nums.end());
+				comb.push_back(nums[i]);
+				nSum(nums_new, target-nums[i], N-1, comb, result);
+			}
+		}
+	}
+
 	int threeSumSmaller(vector<int>& nums, int target) {
 		sort(nums.begin(), nums.end());
 		int cnt = 0;
@@ -2551,7 +2774,7 @@ public:
 		int i = 0;
 		int j = 0;
 		int l = 0;
-		int len = static_cast<int>(s.length());
+		int len = s.length();
 		int wordCount = 0;
 		while(true) {
 			while(i < len && s[i] == ' ') {
@@ -2636,33 +2859,705 @@ public:
 		return t[j];
 	}
 
-	int firstUniqChar(string s) {
-		set<char> repeat;
-		char cur;
-		int len = static_cast<int>(s.size());
-		for (int i = 0; i < len; i++) {
-			cur = s[i];
-			if (repeat.find(cur) == repeat.end()) {
-				if (i == len - 1) {
-					return i;
-				}
-				else {
-					if (s.find(cur, i + 1) != string::npos) {
-						repeat.emplace(cur);
-					}
-					else {
-						return i;
-					}
-				}
+	int integerReplacement(int n) {
+		if(n == 1) return 0;
+		if(n%2 == 0) return integerReplacement(n/2) + 1;
+		else return min(integerReplacement(n+1)+1, integerReplacement(n-1)+1);
+	}
+
+	int maxRotateFunction(vector<int>& A) {
+		int len = static_cast<int>(A.size());
+		int sum = 0;
+		int temp = 0;
+		for(int i = 0; i < len; i++) {
+			sum = sum + A[i];
+			temp = temp + i*A[i];
+		}
+		int result = temp;
+		for(int i = 1; i < len; i++) {
+			temp = temp + sum - len*A[len - i];
+			result = max(temp, result);
+		}
+		return result;
+	}
+
+	vector<int> topKFrequent(vector<int>& nums, int k) {
+		unordered_map<int, int> myMap;
+		for(int elem : nums) {
+			if(myMap.find(elem) != myMap.end()) {
+				myMap[elem]++;
 			}
 			else {
-				continue;
+				myMap.emplace(elem, 1);
 			}
 		}
-		return -1;
+		int maxCount = 0;
+		for(auto onePair : myMap) {
+			int count = onePair.second;
+			maxCount = max(maxCount, count);
+		}
+		vector<vector<int>> myArray(maxCount + 1, vector<int>());
+		for(auto onePair : myMap) {
+			myArray[onePair.second].push_back(onePair.first);
+		}
+
+		vector<int> result;
+		for(int i = maxCount; i>= 0; i--) {
+			if(!myArray[i].empty()) {
+				for(int elem : myArray[i]) {
+					result.push_back(elem);
+				}
+			}
+		}
+		result.resize(k);
+		return result;
+	}
+
+	bool isSubsequence(string s, string t) {
+		int len = static_cast<int>(s.length());
+		size_t pFound = 0;
+		size_t cFound;
+		for(int i = 0; i < len; i++) {
+			if(i == 0) {
+				cFound = t.find(s[i]);
+			}
+			else {
+				cFound = t.find(s[i], pFound+1);
+			}
+			if(cFound == string::npos) {
+				return false;
+			}
+			else {
+				pFound = cFound;
+			}
+		}
+		return true;
+	}
+
+	int maxPoints(vector<Point>& points) {
+		int result = 0;
+		int num = static_cast<int>(points.size());
+		for(int i = 0; i < num; i++){
+			int samePoint = 1;
+			unordered_map<double, int> map;
+			for(int j = i + 1; j < num; j++){
+				if(points[i].x == points[j].x && points[i].y == points[j].y){
+					samePoint++;
+				}
+				else if(points[i].x == points[j].x){
+					map[INT_MAX]++;
+				}
+				else{
+					double slope = double(points[i].y - points[j].y) / double(points[i].x - points[j].x);
+					map[slope]++;
+				}
+			}
+			int localMax = 0;
+			for(auto it = map.begin(); it != map.end(); it++){
+				localMax = max(localMax, it->second);
+			}
+			localMax += samePoint;
+			result = max(result, localMax);
+		}
+		return result;
+	}
+
+	RandomListNode *copyRandomList(RandomListNode *head) {
+		if(!head) return NULL;
+		unordered_map<RandomListNode* , RandomListNode*> myMap;
+		RandomListNode* p = head;
+		RandomListNode* newHead = new RandomListNode(head->label);
+		RandomListNode* q = newHead;
+		myMap.emplace(p, q);
+		p = p->next;
+		while(p) {
+			RandomListNode* temp = new RandomListNode(p->label);
+			q->next = temp;
+			q = q->next;
+			myMap.emplace(p, q);
+			p = p->next;
+		}
+
+		p = head;
+		q = newHead;
+		while(p) {
+			if(p->random) {
+				q->random = myMap[p->random];
+			}
+			else {
+				q->random = NULL;
+			}
+			q = q->next;
+			p = p->next;
+		}
+		return newHead;
+	}
+
+	string largestNumber(vector<int>& nums) {
+		string result = "";
+		sort(nums.begin(), nums.end(), compare);
+		for(int i = 0; i < static_cast<int>(nums.size()); i++) {
+			result = result + to_string(nums[i]);
+		}
+		if(result[0] == '0') {
+			return "0";
+		}
+		return result;
+	}
+
+	static bool compare(int a, int b) {
+		string x = to_string(a);
+		string y = to_string(b);
+		return x+y > y+x;
+	}
+
+	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+		int m = static_cast<int>(nums1.size());
+		int n = static_cast<int>(nums2.size());
+		int total = m + n;
+		if(total%2 == 0) {
+			return (findKth(total/2, nums1, nums2, 0, 0) + findKth(total/2+1, nums1, nums2, 0, 0))/2;
+		}
+		else {
+			return findKth(total/2+1, nums1, nums2, 0, 0);
+		}
+	}
+
+	double findKth(int k, vector<int> nums1, vector<int> nums2, int start1, int start2) {
+		if(start1 >= static_cast<int>(nums1.size())) {
+			return nums2[start2+k-1];
+		}
+		if(start2 >= static_cast<int>(nums2.size())) {
+			return nums1[start1+k-1];
+		}
+		if(k == 1) {
+			return min(nums1[start1], nums2[start2]);
+		}
+		int m1 = start1 + k/2 -1;
+		int m2 = start2 + k/2 -1;
+		int mid1;
+		int mid2;
+		if(m1 < static_cast<int>(nums1.size())) {
+			mid1 = nums1[m1];
+		}
+		else {
+			mid2 = INT_MAX;
+		}
+		if(m2 < static_cast<int>(nums2.size())) {
+			mid2 = nums2[m2];
+		}
+		else {
+			mid2 = INT_MAX;
+		}
+		if(mid1 < mid2) {
+			return findKth(k - k/2, nums1, nums2, m1+1, start2);
+		}
+		else {
+			return findKth(k - k/2, nums1, nums2, start1, m2+1);
+		}
+	}
+
+	bool isMatch(string s, string p) {
+		int lenS = static_cast<int>(s.length());
+		int lenP = static_cast<int>(p.length());
+		int sid = 0;
+		int pid = 0;
+		int starIdx = -1;
+		int savedSid = -1;
+		while(sid < lenS) {
+			if(s[sid] == p[pid] || p[pid] == '?') {
+				sid++;
+				pid++;
+			}
+			else if(p[pid] == '*') {
+				starIdx = pid;
+				pid++;
+				savedSid = sid;
+			}
+			else {
+				if(starIdx > -1) {
+					pid = starIdx + 1;
+					savedSid++;
+					sid = savedSid;
+				}
+				else {
+					return false;
+				}
+			}
+		}
+		while(p[pid] == '*') pid++;
+		return pid == lenP;
+	}
+
+	bool wordBreak(string s, unordered_set<string>& wordDict) {
+		int len = static_cast<int>(s.length());
+		vector<bool> dp(len+1, false);
+		dp[0] = true;
+		for(int i = 1; i <= len; i++) {
+			for(int j = 0; j < i; j++) {
+				if(dp[j] && wordDict.find(s.substr(j, i - j)) != wordDict.end()) {
+					dp[i] = true;
+					break;
+				}
+			}
+		}
+		return dp[len];
+	}
+
+	vector<string> wordBreak2(string s, unordered_set<string>& wordDict) {
+		int len = static_cast<int>(s.length());
+		vector<bool> dp(len+1, false);
+		dp[0] = true;
+		vector<string> path;
+		vector<string> result;
+		for(int i = 1; i <= len; i++) {
+			for(int j = 0; j < i; j++) {
+				if(dp[j] && wordDict.find(s.substr(j, i - j)) != wordDict.end()) {
+					dp[i] = true;
+					break;
+				}
+			}
+		}
+		dfsWordBreak(s, wordDict, path, result, 0, dp);
+
+		return result;
+	}
+
+	void dfsWordBreak(string s, unordered_set<string> wordDict, vector<string>& path, vector<string>& result, int index, vector<bool>& canBreak) {
+		int len = static_cast<int>(s.length());
+		if(len == index) {
+			string oneSentence = "";
+			for(string w : path) {
+				oneSentence = oneSentence + w;
+				oneSentence = oneSentence + " ";
+			}
+			oneSentence.erase(oneSentence.length() - 1);
+			result.push_back(oneSentence);
+			return;
+		}
+
+		if(!canBreak[index]) {
+			return;
+		}
+
+		for(int i = index; i < len; i++) {
+			string remain = s.substr(index, i + 1 - index);
+			if(wordDict.find(remain) != wordDict.end()) {
+				path.push_back(remain);
+				dfsWordBreak(s, wordDict, path, result, i + 1, canBreak);
+				path.pop_back();
+			}
+		}
+	}
+
+	int sumOfLeftLeaves(TreeNode* root) {
+		int sum = 0;
+		if(root) {
+			TreeNode* left = root->left;
+			TreeNode* right = root->right;
+			if(left && (left->left == NULL) && (left->right == NULL)) {
+				sum = sum + left->val + sumOfLeftLeaves(right);
+			}
+			else {
+				sum = sum + sumOfLeftLeaves(left) + sumOfLeftLeaves(right);
+			}
+		}
+		return sum;
+	}
+
+	int findNthDigit(int n) {
+		int i = 0;
+		while(n > 0) {
+			i++;
+			int minusDigits = static_cast<int>(i*(pow(10, i) - pow(10, i-1)));
+			if(n - minusDigits > 0) {
+				n = n -minusDigits;
+			}
+			else {
+				break;
+			}
+		}
+		int number = static_cast<int>(pow(10, i-1) + (n-1)/i);
+		string numberStr = to_string(number);
+		return numberStr[(n-1)%i] - '0';
+	}
+
+	vector<double> calcEquation(vector<pair<string, string>> equations, vector<double>& values, vector<pair<string, string>> queries) {
+		unordered_map<string, int> sampleMap;
+		int index = 0;
+		for(auto equation: equations) {
+			if(sampleMap.find(equation.first) == sampleMap.end()) {
+				sampleMap.emplace(equation.first, index++);
+			}
+			if(sampleMap.find(equation.second) == sampleMap.end()) {
+				sampleMap.emplace(equation.second, index++);
+			}
+		}
+		vector<vector<double>> graph(sampleMap.size(), vector<double>(sampleMap.size(), INT_MAX));
+		for(size_t i = 0; i < values.size(); i++) {
+			int idx1 = sampleMap[equations[i].first];
+			int idx2 = sampleMap[equations[i].second];
+			graph[idx1][idx2] = values[i];
+			graph[idx2][idx1] = 1.0/values[i];
+		}
+
+		for(size_t k = 0; k < sampleMap.size(); k++) {
+			for(size_t i = 0; i < sampleMap.size(); i++) {
+				for(size_t j = 0; j < sampleMap.size(); j++) {
+					if(graph[i][k] != INT_MAX && graph[k][j] != INT_MAX) {
+						graph[i][j] = min(graph[i][k]*graph[k][j], graph[i][j]);
+					}
+				}
+			}
+		}
+		
+		vector<double> result;
+		for(auto query : queries) {
+			if(sampleMap.find(query.first) == sampleMap.end() || sampleMap.find(query.second) == sampleMap.end()) {
+				result.push_back(-1.0);
+			}
+			else {
+				int idx1 = sampleMap[query.first];
+				int idx2 = sampleMap[query.second];
+				double calc = graph[idx1][idx2] == INT_MAX ? -1 : graph[idx1][idx2];
+				result.push_back(calc);
+			}
+		}
+		return result;
+	}
+
+	vector<int> lexicalOrder(int n) {
+		vector<int> result;
+		for(int i = 1; i <= 9; i++) {
+			lexicalOrderDfs(i, n, result);
+		}
+		return result;
+	}
+
+	void lexicalOrderDfs(int cur, int n, vector<int>& result) {
+		if(cur > n) return;
+		result.push_back(cur);
+		for(int i = 0; i < 10; i++) {
+			if(cur*10+i > n) {
+				return;
+			}
+			else {
+				lexicalOrderDfs(cur*10+i, n, result);
+			}
+		}
 	}
 
 
+	vector<vector<int>> pathSum(TreeNode* root, int sum) {
+		vector<vector<int>> result;
+		vector<int> path;
+		pathSum(root, sum, path, result);
+		return result;
+	}
+
+	void pathSum(TreeNode* root, int sum, vector<int>& path, vector<vector<int>>& result) {
+		if(!root) return;
+		if(sum - root->val == 0 && root->left == NULL && root->right == NULL) {
+			path.push_back(root->val);
+			result.push_back(path);
+			path.pop_back();
+			return;
+		}		
+		path.push_back(root->val);
+		sum = sum - root->val;
+		pathSum(root->left, sum, path, result);
+		pathSum(root->right, sum, path, result);
+		path.pop_back();
+	}
+
+	bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {
+		vector<unordered_set<int>> graph(numCourses);
+		for(auto prereq : prerequisites) {
+			graph[prereq.first].insert(prereq.second);
+		}
+		vector<bool> visitedGlobal(numCourses, false);
+		vector<bool> visitedCurrent(numCourses, false);
+		for(int i = 0; i < numCourses; i++) {
+			if(!visitedGlobal[i] && graphCycleDfs(graph, i, visitedGlobal, visitedCurrent)) return false;
+		}
+		return true;
+	}
+
+	bool graphCycleDfs(vector<unordered_set<int>> graph, int curNode, vector<bool>& visitedGlobal, vector<bool>& visitedCurrent) {
+		if(visitedCurrent[curNode]) return false;
+		visitedGlobal[curNode] = true;
+		visitedCurrent[curNode] = true;
+		for(int neighbor : graph[curNode]) {
+			if(visitedCurrent[neighbor] || graphCycleDfs(graph, neighbor, visitedGlobal, visitedCurrent)) {
+				return true;
+			}
+		}
+		visitedCurrent[curNode] = false;
+		return false;
+	}
+
+	vector<string> readBinaryWatch(int num) {
+		vector<string> result;
+		for(int hour = 0; hour < 12; hour++) {
+			for(int minute = 0; minute < 60; minute++) {
+				if(bitset<10>(hour).count() + bitset<10>(minute).count() == num) {
+					string time = to_string(hour) + ":";
+					if(minute < 10) {
+						time = time + "0" + to_string(minute);
+					}
+					else {
+						time = time + to_string(minute);
+					}
+					result.push_back(time);
+				}
+			}
+		}
+		return result;
+	}
+
+	vector<string> findRepeatedDnaSequences(string s) {
+		vector<string> result;
+		string curSeq = "";
+		unordered_map<string ,int> dnaMap;
+		for(size_t i = 0; i < s.length(); i++) {
+			if(curSeq.length() == 10) {
+				curSeq.erase(0, 1);
+				curSeq = curSeq + s[i];
+			}
+			else {
+				curSeq = curSeq + s[i];
+			}
+
+			if(curSeq.length() == 10) {
+				if(dnaMap.find(curSeq) == dnaMap.end()) {
+					dnaMap[curSeq] = 1;
+				}
+				else {
+					dnaMap[curSeq]++;
+				}
+			}
+		}
+
+		for(auto seq : dnaMap) {
+			if(seq.second > 1) {
+				result.push_back(seq.first);
+			}
+		}
+
+		return result;
+	}
+
+	int lastRemaining(int n) {
+		int start = 1;
+		int gap = 1;
+		int cnt = 0;
+		while(n > 1) {
+			n = n/2;
+			gap= gap*2;
+			cnt++;
+			if(cnt%2) {
+				start = start + gap/2 + (n-1)*gap;
+			}
+			else {
+				start = start - gap/2 - (n-1)*gap;
+			}
+		}
+		return start;
+    } 
+
+	vector<int> searchRange(vector<int>& nums, int target) {
+		int start = 0;
+		int end = static_cast<int>(nums.size()) - 1;
+		bool isFind = false;
+		int findIdx = 0;
+		while(start <= end) {
+			int mid = (start + end)/2;
+			if(nums[mid] > target) {
+				end = mid - 1;
+			}
+			else if(nums[mid] < target) {
+				start = mid + 1;
+			}
+			else {
+				isFind = true;
+				findIdx = mid;
+				break;
+			}
+		}
+		int rangeStart = -1;
+		int rangeEnd = -1;
+		vector<int> result;
+		if(isFind) {
+			rangeStart = findIdx;
+			rangeEnd = findIdx;
+			while(nums[rangeStart] == target && rangeStart >= 0 && rangeStart < static_cast<int>(nums.size())) {
+				rangeStart--;
+			}
+			rangeStart++;
+			while(nums[rangeEnd] == target && rangeEnd >= 0 && rangeEnd < static_cast<int>(nums.size())) {
+				rangeEnd++;
+			}
+			rangeEnd--;
+			result.push_back(rangeStart);
+			result.push_back(rangeEnd);
+		}
+		else {
+			result.push_back(rangeStart);
+			result.push_back(rangeEnd);
+		}
+		return result;
+	}
+
+	vector<pair<int, int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+		vector<pair<int, int>> result;
+		for(int num1 : nums1) {
+			for(int num2 : nums2) {
+				pair<int, int> p(num1, num2);
+				result.push_back(p);
+			}
+		}
+		sort(result.begin(), result.end(), comparePair);
+		vector<pair<int, int>> ret; 
+		k = std::min(k, static_cast<int>(result.size()));
+		for(int i = 0; i < k; i++) {
+			ret.push_back(result[i]);
+		}
+		return ret;
+	}
+
+	static bool comparePair(pair<int, int>& p1, pair<int, int>& p2) {
+		return p1.first+p1.second < p2.first + p2.second;
+	}
+
+	vector<string> fizzBuzz(int n) {
+		vector<string> result(n);
+		int j;
+		for(int i = 0; i < n; i++ ) { 
+			j = i + 1;
+			if(j%15 == 0) {
+				result[i] = "FizzBuzz";
+			}
+			else if(j%3 == 0) {
+				result[i] = "Fizz";
+			}
+			else if(j%5 == 0) {
+				result[i] = "Buzz";
+			}
+			else {
+				result[i] = to_string(j);
+			}
+		}
+		return result;
+	}
+
+	int longestPalindrome(string s) {
+		int maxLen = 0;
+		int oddCnt = 0;
+		vector<int> myTable(58, 0);
+		for(char c : s) {
+			myTable[c - 'A']++;
+		}
+		for(int i : myTable) {
+			if(i%2 == 0) {
+				maxLen = maxLen + i;
+			}
+			else {
+				maxLen = maxLen + i - 1;
+				oddCnt++;
+			}
+		}
+		if(oddCnt > 0) maxLen++;
+		return maxLen;
+	}
+
+	int lengthLongestPath(string input) {
+		int result = 0;
+		istringstream ss(input);
+		unordered_map<int, int> myMap;
+		myMap.emplace(0, 0);
+		string line = "";
+		while(getline(ss, line)) {
+			int level = line.find_last_of('\t') + 1;
+			int len = static_cast<int>(line.substr(level).length());
+			if(level == 0) {
+				myMap[level] = len + 1;
+			}
+			else {
+				myMap[level] = myMap[level - 1] + len + 1;
+			}
+			if(line.find('.') != string::npos) {
+				result = max(result, myMap[level]-1);
+			}
+			
+		}
+		return result;
+	}
+
+	vector<string> findMissingRanges(vector<int>& nums, int lower, int upper) {
+		vector<string> result;
+		int start = lower;
+		int end = lower;
+		string missingRange;
+		for(int i : nums) {
+			if(i > start) {
+				end = i -1;
+				if(start == end) {
+					result.push_back(to_string(start));
+				}
+				else {
+					result.push_back(to_string(start) + "->" + to_string(end));
+				}
+				start = i + 1;
+				end = start;
+			}
+			else {
+				start = i + 1;
+			}
+		}
+		if(nums.size() >= 1 && nums.back() < upper) {
+			start = nums.back() + 1;
+			end = upper;
+			if(start == end) {
+				result.push_back(to_string(start));
+			}
+			else {
+				result.push_back(to_string(start) + "->" + to_string(end));
+			}
+		}
+		else if(nums.size() == 0) {
+			if(lower == upper) {
+				result.push_back(to_string(lower));
+			}
+			else {
+				result.push_back(to_string(lower) + "->" + to_string(upper));
+			}
+		}
+		return result;
+	}
+
+	int longestConsecutive(vector<int>& nums) {
+		sort(nums.begin(), nums.end());
+		int maxLen = 0;
+		int curLen = 0;
+		int prevNum = INT_MIN;
+		for(int i : nums) {
+			if(prevNum == INT_MIN) {
+				curLen = 1;
+			}
+			else if(i - prevNum == 1) {
+				curLen++;
+			}
+			else if(i - prevNum == 0) {
+				continue;
+			}
+			else {
+				maxLen = max(maxLen, curLen);
+				curLen = 1;		
+			}
+			prevNum = i;
+		}
+		return max(maxLen, curLen);
+	}
 
 };
 
