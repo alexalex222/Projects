@@ -151,13 +151,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Answer.h" />
+    <ClInclude Include="BSTIterator.h" />
+    <ClInclude Include="ConstructBinaryTree.h" />
+    <ClInclude Include="HitCounter.h" />
+    <ClInclude Include="LRUCache.h" />
+    <ClInclude Include="MedianFinder.h" />
     <ClInclude Include="MinStack.h" />
+    <ClInclude Include="MovingAverage.h" />
     <ClInclude Include="NumArray.h" />
     <ClInclude Include="NumMatrix.h" />
+    <ClInclude Include="PhoneDirectory.h" />
     <ClInclude Include="QueueStack.h" />
     <ClInclude Include="RandomizedSet.h" />
     <ClInclude Include="RangeSum.h" />
     <ClInclude Include="StackQueue.h" />
+    <ClInclude Include="Trie.h" />
+    <ClInclude Include="Twitter.h" />
+    <ClInclude Include="TwoSum.h" />
+    <ClInclude Include="ValidWordAbbr.h" />
+    <ClInclude Include="Vector2D.h" />
+    <ClInclude Include="WordDictionary.h" />
+    <ClInclude Include="ZigzagIterator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

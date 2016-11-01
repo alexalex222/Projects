@@ -2,40 +2,28 @@
 class NumMatrix {
 private:
 	vector<vector<int>> sumMatrix;
-	vector<vector<int>> matrix;
-	int nRow;
-	int nCol;
 public:
 	NumMatrix(vector<vector<int>> &matrix) {
-		this->matrix = matrix;
-		nRow = static_cast<int>(matrix.size());
-		if (nRow) {
-			nCol = static_cast<int>(matrix.back().size());
-			sumMatrix = vector<vector<int>>(nRow + 1, vector<int>(nCol + 1, 0));
-			for (int i = 1; i < nRow + 1; i++) {
-				for (int j = 1; j < nCol + 1; j++) {
-					sumMatrix[i][j] = sumMatrix[i - 1][j] + sumMatrix[i][j - 1] - sumMatrix[i - 1][j - 1] + matrix[i - 1][j - 1];
-				}
+		for (vector<int> nums : matrix) {
+			vector<int> accum;
+			accum.push_back(0);
+			for (int num : nums) {
+				accum.push_back(accum.back() + num);
 			}
+			sumMatrix.push_back(accum);
 		}
-		
 	}
 
 	void update(int row, int col, int val) {
-		int oldVal = matrix[row][col];
-		matrix[row][col] = val;
-		int diff = val - oldVal;
-		if (diff != 0) {
-			for (int i = row + 1; i < nRow + 1; i++) {
-				for (int j = col + 1; j < nCol + 1; j++) {
-					sumMatrix[i][j] = sumMatrix[i][j] + diff;
-				}
-			}
-		}
+
 	}
 
 	int sumRegion(int row1, int col1, int row2, int col2) {
-		return sumMatrix[row2 + 1][col2 + 1] - sumMatrix[row1][col1];
+		int sum = 0;
+		for (int r = row1; r <= row2; r++) {
+			sum = sum + sumMatrix[r][col2 + 1] - sumMatrix[r][col1];
+		}
+		return sum;
 	}
 };
 

@@ -1584,13 +1584,22 @@ public:
 	}
 
 	vector<vector<int>> permute(vector<int>& nums) {
-		vector<vector<int>> result;
-		std::sort(nums.begin(), nums.end());
-		result.push_back(nums);
-		while (std::next_permutation(nums.begin(), nums.end())) {
-			result.push_back(nums);
+		vector<vector<int>> allPer;
+		if (nums.empty()) return allPer;
+		allPer.push_back(vector<int>(1, nums[0]));
+
+		for (int i = 1; i<nums.size(); i++) {
+			int n = allPer.size();
+			for (int j = 0; j<n; j++) {
+				for (int k = 0; k<allPer[j].size(); k++) {
+					vector<int> per = allPer[j];
+					per.insert(per.begin() + k, nums[i]);
+					allPer.push_back(per);
+				}
+				allPer[j].push_back(nums[i]);
+			}
 		}
-		return result;
+		return allPer;
 	}
 
 	void nextPermutation(vector<int>& nums) {
@@ -2954,7 +2963,7 @@ public:
 		int i = 0;
 		int j = 0;
 		int l = 0;
-		int len = s.length();
+		int len = static_cast<int>(s.length());
 		int wordCount = 0;
 		while(true) {
 			while(i < len && s[i] == ' ') {
@@ -3657,7 +3666,7 @@ public:
 		myMap.emplace(0, 0);
 		string line = "";
 		while(getline(ss, line)) {
-			int level = line.find_last_of('\t') + 1;
+			int level = static_cast<int>(line.find_last_of('\t')) + 1;
 			int len = static_cast<int>(line.substr(level).length());
 			if(level == 0) {
 				myMap[level] = len + 1;
