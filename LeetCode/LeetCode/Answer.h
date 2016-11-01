@@ -147,11 +147,20 @@ struct GraphNode {
 
 class Solution {
 public:
+	/*
+	Given a non-negative integer num, repeatedly add all its digits until the result has only one digit.
+	For example:
+	Given num = 38, the process is like: 3 + 8 = 11, 1 + 1 = 2. Since 2 has only one digit, return it.
+	*/
 	int addDigits(int num) {
 		int result = 1 + ((num - 1) % 9);
 		return result;
 	}
 
+	/*
+	Given a binary tree, find its maximum depth.
+	The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+	*/
 	int maxDepth(TreeNode* root) {
 		if (root == NULL) return 0;
 		int leftDepth = maxDepth(root->left);
@@ -159,18 +168,30 @@ public:
 		return std::max(leftDepth, rightDepth) + 1;
 	}
 
+	/*
+	Write a function to delete a node (except the tail) in a singly linked list, given only access to that node.
+	Supposed the linked list is 1 -> 2 -> 3 -> 4 and you are given the third node with value 3, the linked list should become 1 -> 2 -> 4 after calling your function.
+	*/
 	void deleteNode(ListNode* node) {
 		node->val = node->next->val;
 		node->next = node->next->next;
 		return;
 	}
 
+	/*
+	Given two binary trees, write a function to check if they are equal or not.
+	Two binary trees are considered equal if they are structurally identical and the nodes have the same value.
+	*/
 	bool isSameTree(TreeNode* p, TreeNode* q) {
 		if (!p && !q) return true;
 		else if (q && p && p->val == q->val) return (isSameTree(p->left, q->left) && isSameTree(p->right, q->right));
 		else return false;
 	}
 
+	/*
+	Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+	For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be [1, 3, 12, 0, 0].
+	*/
 	void moveZeroes(vector<int>& nums) {
 		size_t i = 0;
 		size_t j = 0;
@@ -186,6 +207,7 @@ public:
 		return;
 	}
 
+	//Invert a binary tree.
 	TreeNode* invertTree(TreeNode* root) {
 		if (root) {
 			TreeNode *temp = root->left;
@@ -198,6 +220,10 @@ public:
 		return root;
 	}
 
+	/*
+	Given a binary search tree (BST), find the lowest common ancestor (LCA) of two given nodes in the BST.
+	According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes v and w as the lowest node in T that has both v and w as descendants (where we allow a node to be a descendant of itself).”
+	*/
 	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 		if (root->val > p->val && root->val > q->val) return lowestCommonAncestor(root->left, p, q);
 		else if (root->val < p->val && root->val < q->val) return lowestCommonAncestor(root->right, p, q);
@@ -213,6 +239,9 @@ public:
 		return count;
 	}
 
+	/*
+	Given an array of integers, find if the array contains any duplicates. Your function should return true if any value appears at least twice in the array, and it should return false if every element is distinct.
+	*/
 	bool containsDuplicate(vector<int>& nums) {
 		set<int> s;
 		for (int i : nums) {
@@ -222,6 +251,7 @@ public:
 		return false;
 	}
 
+	//Given a positive integer, return its corresponding column title as appear in an Excel sheet.
 	int titleToNumber(string s) {
 		int number = 0;
 		for (size_t i = 0; i < s.size(); i++) {
@@ -232,11 +262,21 @@ public:
 		return number;
 	}
 
+	/*
+	Given an array of size n, find the majority element. The majority element is the element that appears more than ? n/2 ? times.
+	You may assume that the array is non-empty and the majority element always exist in the array.
+	*/
 	int majorityElement(vector<int>& nums) {
 		std::sort(nums.begin(), nums.end());
 		return nums[nums.size() / 2];
 	}
 
+	/*
+	Given two strings s and t, write a function to determine if t is an anagram of s.
+	For example,
+	s = "anagram", t = "nagaram", return true.
+	s = "rat", t = "car", return false.
+	*/
 	bool isAnagram(string s, string t) {
 		size_t lenS = s.length();
 		size_t lenT = t.length();
@@ -255,6 +295,7 @@ public:
 		return true;
 	}
 
+	//Given an array of strings, group anagrams together.
 	vector<vector<string>> groupAnagrams(vector<string>& strs){
 		vector<vector<string>> result;
 		for(string str : strs) {
@@ -284,6 +325,10 @@ public:
 		return result;
 	}
 
+	/*
+	Given a roman numeral, convert it to an integer.
+	Input is guaranteed to be within the range from 1 to 3999.
+	*/
 	int romanToInt(string s) {
 		int val[255];
 		val['I'] = 1;
@@ -302,6 +347,12 @@ public:
 		return num + val[s[s.length() - 1]];
 	}
 
+	/*
+	Given a sorted linked list, delete all duplicates such that each element appear only once.
+	For example,
+	Given 1->1->2, return 1->2.
+	Given 1->1->2->3->3, return 1->2->3.
+	*/
 	ListNode* deleteDuplicates(ListNode* head) {
 		if (head == NULL || head->next == NULL) return head;
 		ListNode *cur = head;
@@ -316,6 +367,10 @@ public:
 		return head;
 	}
 
+	/*
+	You are climbing a stair case. It takes n steps to reach to the top.
+	Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+	*/
 	int climbStairs(int n) {
 		if (n == 0 || n == 1 || n == 2) return n;
 		vector<int> dp(n + 1);
@@ -328,6 +383,7 @@ public:
 		return dp[n];
 	}
 
+	//Reverse a singly linked list.
 	ListNode* reverseList(ListNode* head) {
 		ListNode *pre = NULL;
 		while (head) {
@@ -339,6 +395,10 @@ public:
 		return pre;
 	}
 
+	/*
+	Write a program to check whether a given number is an ugly number.
+	Ugly numbers are positive numbers whose prime factors only include 2, 3, 5. For example, 6, 8 are ugly while 14 is not ugly since it includes another prime factor 7.
+	*/
 	bool isUgly(int num) {
 		if (num <= 0) return false;
 		int factor[] = { 2, 3,5 };
@@ -348,6 +408,10 @@ public:
 		return num == 1;
 	}
 
+	/*
+	Write an algorithm to determine if a number is "happy".
+	A happy number is a number defined by the following process: Starting with any positive integer, replace the number by the sum of the squares of its digits, and repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1. Those numbers for which this process ends in 1 are happy numbers.
+	*/
 	bool isHappy(int n) {
 		set<int> showedNumbers;
 		int sum = n;
@@ -368,6 +432,7 @@ public:
 		return n % 4 != 0;
 	}
 
+	//Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
 	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
 		ListNode *result = new ListNode(0);
 		ListNode *current = result;
@@ -391,6 +456,7 @@ public:
 		return result->next;
 	}
 
+	//Merge k Sorted Lists
 	ListNode* mergeKLists(vector<ListNode*>& lists) {
 		int len = static_cast<int>(lists.size());
 		if(len < 1) return NULL;
@@ -401,6 +467,10 @@ public:
 		return result;
 	}
 
+	/*
+	Given a binary tree, determine if it is height-balanced.
+	For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+	*/
 	bool isBalanced(TreeNode* root) {
 		if (!root) return true;
 		if (std::abs(treeDepth(root->left) - treeDepth(root->right)) > 1) {
@@ -414,6 +484,7 @@ public:
 		return 1 + std::max(treeDepth(root->left), treeDepth(root->right));
 	}
 
+	//Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
 	bool isSymmetric(TreeNode* root) {
 		if (!root) return true;
 		return isSymmetric(root->left, root->right);
@@ -428,7 +499,11 @@ public:
 		}
 		return (p->val == q->val && isSymmetric(p->right, q->left) && isSymmetric(p->left, q->right));
 	}
-
+	/*
+	Given an array and a value, remove all instances of that value in place and return the new length.
+	Do not allocate extra space for another array, you must do this in place with constant memory.
+	The order of elements can be changed. It doesn't matter what you leave beyond the new length.
+	*/
 	int removeElement(vector<int>& nums, int val) {
 		size_t i = 0;
 		int j = 0;
@@ -446,6 +521,7 @@ public:
 		return static_cast<int>(k - j);
 	}
 
+	//Given a binary tree, return the bottom-up level order traversal of its nodes' values. (ie, from left to right, level by level from leaf to root).
 	vector<vector<int>> levelOrderBottom(TreeNode* root) {
 		vector<vector<int>> result;
 		if (!root) return result;
@@ -473,6 +549,10 @@ public:
 		return result;
 	}
 
+	/*
+	Given a sorted array, remove the duplicates in place such that each element appear only once and return the new length.
+	Do not allocate extra space for another array, you must do this in place with constant memory.
+	*/
 	int removeDuplicates(vector<int>& nums) {
 		if (nums.empty()) return 0;
 		size_t i = 0;
@@ -490,6 +570,7 @@ public:
 		return j + 1;
 	}
 
+	//Given an integer, write a function to determine if it is a power of two.
 	bool isPowerOfTwo(int n) {
 		int cnt = 0;
 		while (n > 0) {
@@ -499,6 +580,13 @@ public:
 		return cnt == 1;
 	}
 
+	/*
+	You are a professional robber planning to rob houses along a street. 
+	Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected 
+	and it will automatically contact the police if two adjacent houses were broken into on the same night.
+	Given a list of non-negative integers representing the amount of money of each house, 
+	determine the maximum amount of money you can rob tonight without alerting the police.
+	*/
 	int rob(vector<int>& nums) {
 		int odd = 0;
 		int even = 0;
@@ -509,6 +597,10 @@ public:
 		return std::max(odd, even);
 	}
 
+	/*
+	Given a non-negative number represented as an array of digits, plus one to the number.
+	The digits are stored such that the most significant digit is at the head of the list.
+	*/
 	vector<int> plusOne(vector<int>& digits) {
 		int addone = 1;
 		for (auto i = digits.size() - 1; i >= 0; i--) {
@@ -522,6 +614,16 @@ public:
 		return result;
 	}
 
+	/*
+	Given numRows, generate the first numRows of Pascal's triangle.
+	[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+	*/
 	vector<vector<int>> generate(int numRows) {
 		vector<vector<int>> result = vector<vector<int>>();
 		if (numRows <= 0) return result;
@@ -545,6 +647,7 @@ public:
 		return result;
 	}
 
+	//Given an integer n, return the number of trailing zeroes in n!.
 	int trailingZeroes(int n) {
 		int i = 1;
 		int zeros = 0;
@@ -556,6 +659,11 @@ public:
 		return zeros;
 	}
 
+	/*
+	Given an index k, return the kth row of the Pascal's triangle.
+	For example, given k = 3,
+	Return [1,3,3,1].
+	*/
 	vector<int> getRow(int rowIndex) {
 		vector<int> result = vector<int>();
 		if (rowIndex < 0) return result;
@@ -568,6 +676,7 @@ public:
 		return result;
 	}
 
+	//Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level from root to leaf).
 	vector<vector<int>> levelOrder(TreeNode* root) {
 		vector<vector<int>> result;
 		if (!root) return result;
@@ -594,6 +703,7 @@ public:
 		return result;
 	}
 
+	//Determine whether an integer is a palindrome. Do this without extra space.
 	bool isPalindrome(int x) {
 		if (x < 0) return false;
 		int div = 1;
@@ -2301,6 +2411,11 @@ public:
 		return max(maxLen, static_cast<int>(myMap.size()));
 	}
 
+	/*
+	Given a string, determine if a permutation of the string could form a palindrome.
+	For example,
+	"code" -> False, "aab" -> True, "carerac" -> True.
+	*/
 	bool canPermutePalindrome(string s) {
 		vector<int> isEven(256, 0);
 		int oddCount = 0;
@@ -2311,6 +2426,71 @@ public:
 			if(i/2*2 != i) oddCount++;
 		}
 		return oddCount <= 1 ? true : false;
+	}
+
+
+	/*
+	Given a string s, return all the palindromic permutations (without duplicates) of it. Return an empty list if no palindromic permutation could be form.
+	For example:
+	Given s = "aabb", return ["abba", "baab"].
+	Given s = "abc", return [].
+	*/
+	vector<string> generatePalindromes(string s){
+		vector<string> result;
+		vector<int> isEven(256, 0);
+		int oddCnt = 0;
+		int oddIndex = 0;
+		for(char c : s) {
+			isEven[c]++;
+		}
+		for(int i = 0; i < static_cast<int>(isEven.size()); i++) {
+			if(isEven[i]%2 == 1) {
+				oddCnt++;
+				oddIndex = i;
+			}
+		}
+
+		string middle;
+		if(oddCnt > 1) {
+			return result;
+		}
+		else if(oddCnt == 0) {
+			middle = "";
+		}
+		else {
+			middle = string(isEven[oddCnt], static_cast<char>(oddIndex));
+		}
+		
+		string halfS;
+		for(int i = 0; i < static_cast<int>(isEven.size()); i++) {
+			if(i == oddIndex) continue;
+			if(isEven[i] > 0) {
+				halfS += string(isEven[i]/2, static_cast<char>(i));
+			}
+		}
+		vector<string> halfPermute = generatePermute(halfS);
+		for(string oneHalfPermute : halfPermute) {
+			result.push_back(oneHalfPermute + middle + string(oneHalfPermute.rbegin(), oneHalfPermute.rend()));
+		}
+		return result;
+	}
+
+	vector<string> generatePermute(string s) {
+		vector<string> result;
+		result.push_back("");
+
+		for(int i = 0; i < static_cast<int>(s.size()); i++) {
+			set<string> curSet; 
+			for(string onePerm : result) {
+				for(int j = 0; j < static_cast<int>(onePerm.size()) + 1; j++) {
+					onePerm.insert(j, 1, s[i]);
+					curSet.insert(onePerm);
+					onePerm.erase(j);
+				}
+			}
+			result = vector<string>(curSet.begin(), curSet.end());
+		}
+		return result;
 	}
 
 	vector<string> generatePossibleNextMoves(string s) {
@@ -3559,6 +3739,12 @@ public:
 		return max(maxLen, curLen);
 	}
 
+	/*
+	A city's skyline is the outer contour of the silhouette formed by all the buildings in that city when viewed from a distance. Now suppose you are given the locations and height of all the buildings as shown on a cityscape photo (Figure A), write a program to output the skyline formed by these buildings collectively (Figure B).
+	*/
+	vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
+
+	}
 };
 
 #endif
