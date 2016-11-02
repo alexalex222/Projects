@@ -1,6 +1,19 @@
 #include <iostream>
+#include <string>
 #include <vector>
+#include <algorithm>
+#include <set>
+#include <map>
 #include <queue>
+#include <cmath>
+#include <stack>
+#include <sstream>
+#include <unordered_map>
+#include <climits>
+#include <functional>
+#include <stdint.h>
+#include <unordered_set>
+#include <bitset>
 
 using namespace std;
 #include "Answer.h"
@@ -25,6 +38,7 @@ using namespace std;
 #include "NumArray.h"
 #include "MedianFinder.h"
 #include "ConstructBinaryTree.h"
+#include "Permutation.h"
 
 int main() {
 	Solution mySolution = Solution();
@@ -32,9 +46,10 @@ int main() {
 	vector<int> v1;
 	v1.push_back(1);
 	v1.push_back(2);
-	v1.push_back(3);
+	v1.push_back(2);
 
-	mySolution.permute(v1);
+	Permutation myPerm;
+	vector<vector<int>> ret = myPerm.permuteUnique(v1);
 	
 
 	return 0;
