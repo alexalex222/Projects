@@ -49,7 +49,7 @@ int main() {
 	v1.push_back(2);
 
 	Permutation myPerm;
-	vector<vector<int>> ret = myPerm.permuteUnique(v1);
+	string ret = mySolution.shortestPalindrome("a");
 	
 
 	return 0;

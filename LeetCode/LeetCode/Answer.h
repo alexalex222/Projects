@@ -3645,11 +3645,34 @@ public:
 		return max(maxLen, curLen);
 	}
 
-	/*
-	A city's skyline is the outer contour of the silhouette formed by all the buildings in that city when viewed from a distance. Now suppose you are given the locations and height of all the buildings as shown on a cityscape photo (Figure A), write a program to output the skyline formed by these buildings collectively (Figure B).
-	*/
-	vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
+	//Given an array nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
+	vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+		vector<int> result;
+		deque<int> myWindow;
 
+		for (int i = 0; i < static_cast<int>(nums.size()); i++) {
+			if (!myWindow.empty() && myWindow.front() == i - k) myWindow.pop_front();
+			while (!myWindow.empty() && nums[myWindow.back()] < nums[i]) myWindow.pop_back();
+			myWindow.push_back(i);
+			if (i >= k - 1) result.push_back(nums[myWindow.front()]);
+		}
+		return result;
+	}
+
+	//Given a string S, you are allowed to convert it to a palindrome by adding characters in front of it. Find and return the shortest palindrome you can find by performing this transformation.
+	string shortestPalindrome(string s) {
+		int i = 0;
+		if (static_cast<int>(s.size()) == 0) return "";
+		for (int j = static_cast<int>(s.size()) - 1; j >= 0; j--) {
+			if (s[i] == s[j]) i++;
+		}
+
+		if (i == static_cast<int>(s.size())) return s;
+
+		string prefix = s.substr(i, string::npos);
+		string suffix = string(prefix.rbegin(), prefix.rend());
+		string middle = s.substr(0, i);
+		return prefix + middle + suffix;
 	}
 };
 
