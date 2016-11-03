@@ -1110,6 +1110,8 @@ public:
 		return -1;
 	}
 
+	
+
 	bool isPalindrome(string s) {
 		int len = static_cast<int>(s.size());
 		if (len <= 1) return true;
@@ -1138,6 +1140,53 @@ public:
 
 	bool isSameChar(char a, char b) {
 		return toupper(a) == toupper(b);
+	}
+
+
+	/*
+	Given a string s, partition s such that every substring of the partition is a palindrome.
+	Return all possible palindrome partitioning of s.
+	*/
+	vector<vector<string>> partition(string s) {
+		vector<vector<string>> result;
+		if(s.empty()) return result;
+		
+		vector<string> onePartition;
+		dfsPartition(s, 0, result, onePartition);
+		return result;
+	}
+
+	void dfsPartition(string s, int start, vector<vector<string>>& result, vector<string>& onePartition) {
+		// stop condition
+		if(start == static_cast<int>(s.size())) {
+			result.push_back(onePartition);
+			return;
+		}
+
+		//dfs search
+		for(int len = 1; len + start <= static_cast<int>(s.size()); len++) {
+			string temp = s.substr(start, len);
+			if(isPalindrome(temp)) {
+				onePartition.push_back(temp);
+				dfsPartition(s, start+len, result, onePartition);
+				onePartition.pop_back();
+			}
+		}
+	}
+
+	/*
+	Given a string s, partition s such that every substring of the partition is a palindrome.
+	Return the minimum cuts needed for a palindrome partitioning of s.
+	For example, given s = "aab",
+	Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
+	*/
+	int minCut(string s) {
+		vector<vector<string>> allPalindromes = partition(s);
+		int cutNum = INT_MAX;
+		for(vector<string> temp : allPalindromes) {
+			cutNum = min(static_cast<int>(temp.size()) -1, cutNum);
+		}
+		return cutNum;
 	}
 
 	string convert(string s, int numRows) {
@@ -3663,17 +3712,19 @@ public:
 	string shortestPalindrome(string s) {
 		int i = 0;
 		if (static_cast<int>(s.size()) == 0) return "";
-		for (int j = static_cast<int>(s.size()) - 1; j >= 0; j--) {
+		for (int j = static_cast<int>(s.size()) - 1; j >= i; j--) {
 			if (s[i] == s[j]) i++;
 		}
 
 		if (i == static_cast<int>(s.size())) return s;
 
-		string prefix = s.substr(i, string::npos);
-		string suffix = string(prefix.rbegin(), prefix.rend());
+		string suffix = s.substr(i, string::npos);
+		string prefix = string(suffix.rbegin(), suffix.rend());
 		string middle = s.substr(0, i);
 		return prefix + middle + suffix;
 	}
+
+	
 };
 
 #endif
