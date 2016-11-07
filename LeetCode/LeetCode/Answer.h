@@ -3968,8 +3968,8 @@ public:
 	followed by n-1 bytes with most significant 2 bits being 10.
 	*/
 	bool validUtf8(vector<int>& data) {
-		for (int i = 0; i < data.size(); ++i) {
-			if (data[i] < 0b10000000) {
+		for (int i = 0; i < static_cast<int>(data.size()); ++i) {
+			if (data[i] < 128) {
 				continue;
 			}
 			else {
@@ -3981,7 +3981,7 @@ public:
 				}
 				if (cnt == 1) return false;
 				for (int j = i + 1; j < i + cnt; ++j) {
-					if (data[j] > 0b10111111 || data[j] < 0b10000000) return false;
+					if (data[j] > 191 || data[j] < 128) return false;
 				}
 				i += cnt - 1;
 			}
@@ -4039,6 +4039,109 @@ public:
 		}
 		return k;
 	} 
+
+	/*
+	Given a sequence of words, check whether it forms a valid word square.
+	*/
+	bool validWordSquare(vector<string>& words) {
+		int i = 0;
+		for(string word : words) {
+			string vert;
+			for(string temp : words) {
+				if(i < static_cast<int>(temp.size())) {
+					vert = vert + string(1, temp[i]);
+				}
+			}
+			if(word != vert) return false;
+			i++;
+		}
+		return true;
+	}
+
+	/*
+	Given a binary tree, find the length of the longest consecutive sequence path.
+	The path refers to any sequence of nodes from some starting node to any node in the tree along the parent-child connections. 
+	The longest consecutive path need to be from parent to child (cannot be the reverse).
+	*/
+	int longestConsecutive(TreeNode* root) {
+		if(!root) return 0;
+		queue<TreeNode*> currLevel;
+		queue<int> currSize;
+		currLevel.push(root);
+		currSize.push(1);
+		int maxSize = 1;
+
+		while(!currLevel.empty()) {
+			TreeNode* temp = currLevel.front();
+			currLevel.pop();
+			int currMax = currSize.front();
+			currSize.pop();
+
+			if(temp->left != NULL) {
+				int leftSize = currMax;
+				if(temp->left->val - temp->val == 1) {
+					leftSize++;
+					maxSize = max(maxSize, leftSize);
+				}
+				else {
+					leftSize = 1;
+				}
+				currLevel.push(temp->left);
+				currSize.push(leftSize);
+			}
+
+			if(temp->right != NULL) {
+				int rightSize = currMax;
+				if(temp->right->val - temp->val == 1) {
+					rightSize++;
+					maxSize = max(maxSize, rightSize);
+				}
+				else {
+					rightSize = 1;
+				}
+				currLevel.push(temp->right);
+				currSize.push(rightSize);
+			}
+		}
+		return maxSize;
+	}
+
+	/*
+	iven a list of airline tickets represented by pairs of departure and arrival airports [from, to], 
+	reconstruct the itinerary in order. All of the tickets belong to a man who departs from JFK. 
+	Thus, the itinerary must begin with JFK.
+	*/
+	vector<string> findItinerary(vector<pair<string, string>> tickets) {
+		vector<string> itineray;
+		if(tickets.empty()) return itineray;
+		unordered_map<string, priority_queue<string>> fromToMap;
+		for(auto ticket : tickets) {
+			string departure = ticket.first;
+			string arrival = ticket.second;
+			if(fromToMap.find(departure) == fromToMap.end()) {
+				priority_queue<string> arrivals;
+				arrivals.push(arrival);
+				fromToMap.emplace(departure, arrivals);
+			}
+			else {
+				fromToMap[departure].push(arrival);
+			}
+		}
+
+		dfsItineray("JKF", fromToMap, itineray);
+		vector<string> result(itineray.rbegin(), itineray.rend());
+		return result;
+	}
+
+	void dfsItineray(string departure, unordered_map<string, priority_queue<string>>& fromtToMap, vector<string>& itineray) {
+		if(fromtToMap.find(departure) != fromtToMap.end()) {
+			while(!fromtToMap[departure].empty()) {
+				dfsItineray(fromtToMap[departure].top(), fromtToMap, itineray);
+				fromtToMap[departure].pop();
+			}
+		}
+		itineray.push_back(departure);
+	}
 };
 
 #endif
