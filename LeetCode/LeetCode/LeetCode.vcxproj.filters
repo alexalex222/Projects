@@ -89,5 +89,11 @@
     <ClInclude Include="Permutation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Codec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Calculator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

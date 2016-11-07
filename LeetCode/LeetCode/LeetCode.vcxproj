@@ -152,6 +152,8 @@
   <ItemGroup>
     <ClInclude Include="Answer.h" />
     <ClInclude Include="BSTIterator.h" />
+    <ClInclude Include="Calculator.h" />
+    <ClInclude Include="Codec.h" />
     <ClInclude Include="ConstructBinaryTree.h" />
     <ClInclude Include="HitCounter.h" />
     <ClInclude Include="LRUCache.h" />

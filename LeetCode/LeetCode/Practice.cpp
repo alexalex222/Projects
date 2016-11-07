@@ -39,17 +39,23 @@ using namespace std;
 #include "MedianFinder.h"
 #include "ConstructBinaryTree.h"
 #include "Permutation.h"
+#include "Codec.h"
+#include "Calculator.h"
+
 
 int main() {
 	Solution mySolution = Solution();
 
-	vector<int> v1;
-	v1.push_back(1);
-	v1.push_back(2);
-	v1.push_back(2);
+	TreeNode* root = new TreeNode(1);
+	root->left = new TreeNode(-2);
+	root->right = new TreeNode(-3);
+	root->left->left = new TreeNode(1);
+	root->left->right = new TreeNode(3);
+	root->right->left = new TreeNode(-2);
+	root->left->left->left = new TreeNode(-1);
 
-	Permutation myPerm;
-	string ret = mySolution.shortestPalindrome("a");
+	int ret = mySolution.arrangeCoins(1804289383);
+	
 	
 
 	return 0;

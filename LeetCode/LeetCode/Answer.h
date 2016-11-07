@@ -15,6 +15,9 @@
 #include <unordered_set>
 #include <bitset>
 
+
+#include "Trie.h"
+
 using std::vector;
 using std::string;
 using std::set;
@@ -26,6 +29,10 @@ using std::stack;
 using std::max;
 using std::min;
 using std::bitset;
+
+
+class Trie;
+class TrieNode;
 
 #ifndef ANSWER_H
 #define ANSWER_H
@@ -144,6 +151,11 @@ struct GraphNode {
 };
 
 
+struct UndirectedGraphNode {
+	int label;
+	vector<UndirectedGraphNode *> neighbors;
+	UndirectedGraphNode(int x) : label(x) {};
+};
 
 class Solution {
 public:
@@ -1181,12 +1193,86 @@ public:
 	Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
 	*/
 	int minCut(string s) {
-		vector<vector<string>> allPalindromes = partition(s);
-		int cutNum = INT_MAX;
-		for(vector<string> temp : allPalindromes) {
-			cutNum = min(static_cast<int>(temp.size()) -1, cutNum);
+		int len = static_cast<int>(s.size());
+		if (len <= 1) return 0;
+		vector<vector<bool>> dp(len, vector<bool>(len, false));
+		vector<int> cut(len, INT_MAX);
+		
+		for (int right = 0; right < len; right++) {
+			for (int left = 0; left <= right; left++) {
+				if (s[left] == s[right] && (right - left <= 1 || dp[left + 1][right - 1])) {
+					dp[left][right] = true;
+					
+					if (left > 0) {
+						cut[right] = min(cut[right], cut[left - 1] + 1);
+					}
+					else {
+						cut[right] = 0;
+					}
+				}
+			}
 		}
-		return cutNum;
+
+		return cut.back();
+	}
+
+	/*
+	Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, 
+	so that the concatenation of the two words, i.e. words[i] + words[j] is a palindrome.
+	*/
+	vector<vector<int>> palindromePairs(vector<string>& words) {
+		vector<vector<int>> result;
+		map<string, int> myMap;
+		set<int> mySet;
+
+		for (int i = 0; i < static_cast<int>(words.size()); i++) {
+			myMap[words[i]] = i;
+			mySet.insert(static_cast<int>(words[i].size()));
+		}
+
+		for (int i = 0; i < static_cast<int>(words.size()); i++) {
+			string part = string(words[i].rbegin(), words[i].rend());
+			if (myMap.count(part) && myMap[part] != i) {
+				vector<int> onePair;
+				onePair.push_back(i);
+				onePair.push_back(myMap[part]);
+				result.push_back(onePair);
+			}
+
+			int len = static_cast<int>(part.size());
+			auto lenLim = mySet.find(len);
+			for (set<int>::iterator it = mySet.begin(); it != lenLim; it++) {
+				int counterpartLen = *it;
+				if (isPartPalindrome(part, 0, len - counterpartLen - 1) && myMap.count(part.substr(len - counterpartLen, string::npos))) {
+					vector<int> onePair;
+					onePair.push_back(i);
+					onePair.push_back(myMap[part.substr(len - counterpartLen, string::npos)]);
+					result.push_back(onePair);
+				}
+				
+				if (isPartPalindrome(part, counterpartLen, len - 1) && myMap.count(part.substr(0, counterpartLen))) {
+					vector<int> onePair;
+					onePair.push_back(myMap[part.substr(0, counterpartLen)]);
+					onePair.push_back(i);
+					result.push_back(onePair);
+				}
+				
+			}
+		}
+		return result;
+	}
+
+	bool isPartPalindrome(string s, int left, int right) {
+		while (left < right) {
+			if (s[left] == s[right]) {
+				left++;
+				right--;
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	string convert(string s, int numRows) {
@@ -3405,6 +3491,42 @@ public:
 		path.pop_back();
 	}
 
+	/*
+	You are given a binary tree in which each node contains an integer value.
+	Find the number of paths that sum to a given value.
+	The path does not need to start or end at the root or a leaf,
+	but it must go downwards (traveling only from parent nodes to child nodes).
+	*/
+	int pathSumIII(TreeNode* root, int sum) {
+		if (!root) return 0;
+		vector<int> path;
+		vector<vector<int>> paths;
+		dfsPathSum(root, sum, path, paths);
+		return static_cast<int>(paths.size());
+	}
+
+	void dfsPathSum(TreeNode* root, int sum, vector<int>& path, vector<vector<int>>& paths) {
+		if (!root) return;
+		if (root->val == sum) {
+			path.push_back(root->val);
+			paths.push_back(path);
+			path.pop_back();
+			return;
+		}
+
+		if (path.empty()) {
+			dfsPathSum(root->left, sum, path, paths);
+			dfsPathSum(root->right, sum, path, paths);
+		}
+
+		path.push_back(root->val);
+		sum = sum -  root->val;
+		dfsPathSum(root->left, sum, path, paths);
+		dfsPathSum(root->right, sum, path, paths);
+		path.pop_back();
+		return;
+	}
+
 	bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {
 		vector<unordered_set<int>> graph(numCourses);
 		for (auto prereq : prerequisites) {
@@ -3724,7 +3846,199 @@ public:
 		return prefix + middle + suffix;
 	}
 
-	
+	string frequencySort(string s) {
+		map<char, pair<char, int>> myMap;
+		vector<pair<char, int>> myVec;
+		for (char c : s) {
+			if (myMap.find(c) == myMap.end()) {
+				pair<char, int> p(c, 1);
+				myMap.emplace(c, p);
+			}
+			else {
+				myMap[c].second++;
+			}
+		}
+
+		for (auto it = myMap.begin(); it != myMap.end(); it++) {
+			myVec.push_back(it->second);
+		}
+
+		sort(myVec.begin(), myVec.end(), compareCharFreq);
+		string result = "";
+		for (auto p : myVec) {
+			result = result + string(p.second, p.first);
+		}
+		return result;
+	}
+
+	static bool compareCharFreq(pair<char, int> p1, pair<char, int> p2) {
+		return p1.second > p2.second;
+	}
+
+	//Clone an undirected graph. Each node in the graph contains a label and a list of its neighbors.
+	UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
+		if (!node) return NULL;
+		UndirectedGraphNode* newHead = new UndirectedGraphNode(node->label);
+		queue<UndirectedGraphNode*> myQueue;
+		map<UndirectedGraphNode*, UndirectedGraphNode*> myMap;
+		myQueue.push(node);
+		myMap.emplace(node, newHead);
+
+		while (!myQueue.empty()) {
+			UndirectedGraphNode* cur = myQueue.front();
+			myQueue.pop();
+			for (auto neighbor : cur->neighbors) {
+				if (myMap.find(neighbor) == myMap.end()) {
+					UndirectedGraphNode* aCopy = new UndirectedGraphNode(neighbor->label);
+					myMap.emplace(aCopy, neighbor);
+					myMap[cur]->neighbors.push_back(aCopy);
+					myQueue.push(neighbor);
+				}
+				else {
+					myMap[cur]->neighbors.push_back(myMap[neighbor]);
+				}
+			}
+		}
+		return newHead;
+	}
+
+	/*
+	Given a 2D board and a list of words from the dictionary, find all words in the board.
+	Each word must be constructed from letters of sequentially adjacent cell,
+	where "adjacent" cells are those horizontally or vertically neighboring.
+	The same letter cell may not be used more than once in a word.
+	*/
+	vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+		vector<string> result;
+		set<string> tempResult;
+		int numRow = static_cast<int>(board.size());
+		if (numRow == 0) return result;
+		int numCol = static_cast<int>(board[0].size());
+		if (numCol == 0) return result;
+
+		Trie myTrie;
+		for (string word : words) {
+			myTrie.insert(word);
+		}
+
+		vector<vector<bool>> visited(numRow, vector<bool>(numCol, false));
+		for (int x = 0; x < numRow; x++) {
+			for (int y = 0; y < numCol; y++) {
+				string s = "";
+				dfsWordBoard(board, visited, s, x, y, myTrie, tempResult);
+			}
+		}
+		result = vector<string>(tempResult.begin(), tempResult.end());
+		return result;
+
+	}
+
+	void dfsWordBoard(vector<vector<char>> board, vector<vector<bool>> visited, string& s, int x, int y, Trie myTrie, set<string>& result) {
+		if (x < 0 || x >= static_cast<int>(board.size()) || y < 0 || y >= static_cast<int>(board[0].size())) {
+
+			return;
+		}
+		if (visited[x][y]) {
+			return;
+		}
+		s = s + string(1, board[x][y]);
+
+		
+		if (!myTrie.startsWith(s)) {
+			s.pop_back();
+			return;
+		}
+		if (myTrie.search(s)) {
+			result.insert(s);
+		}
+		visited[x][y] = true;
+		dfsWordBoard(board, visited, s, x + 1, y, myTrie, result);
+		dfsWordBoard(board, visited, s, x - 1, y, myTrie, result);
+		dfsWordBoard(board, visited, s, x, y + 1, myTrie, result);
+		dfsWordBoard(board, visited, s, x, y - 1, myTrie, result);
+		s.pop_back();
+		visited[x][y] = false;
+		return;
+	}
+
+	/*
+	A character in UTF8 can be from 1 to 4 bytes long, subjected to the following rules:
+	For 1-byte character, the first bit is a 0, followed by its unicode code.
+	For n-bytes character, the first n-bits are all one's, the n+1 bit is 0, 
+	followed by n-1 bytes with most significant 2 bits being 10.
+	*/
+	bool validUtf8(vector<int>& data) {
+		for (int i = 0; i < data.size(); ++i) {
+			if (data[i] < 0b10000000) {
+				continue;
+			}
+			else {
+				int cnt = 0, val = data[i];
+				for (int j = 7; j >= 1; --j) {
+					if (val >= pow(2, j)) ++cnt;
+					else break;
+					val -= static_cast<int>(pow(2, j));
+				}
+				if (cnt == 1) return false;
+				for (int j = i + 1; j < i + cnt; ++j) {
+					if (data[j] > 0b10111111 || data[j] < 0b10000000) return false;
+				}
+				i += cnt - 1;
+			}
+		}
+		return true;
+	}
+
+	string addStrings(string num1, string num2) {
+		int len1 = static_cast<int>(num1.size());
+		int len2 = static_cast<int>(num2.size());
+		if (len1 == 0) return num2;
+		if (len2 == 0) return num1;
+		string result;
+		string adder;
+		if (len1 >= len2) {
+			result = num1;
+			adder = num2;
+		}
+		else {
+			result = num2;
+			adder = num1;
+			int temp = len1;
+			len1 = len2;
+			len2 = temp;
+		}
+
+		int i = len1 - 1;
+		int j = len2 - 1;
+		int carry = 0;
+		while (i >= 0 && j >= 0) {
+			int val = result[i] - '0' + adder[j] - '0' + carry;
+			carry = val / 10;
+			result[i] = static_cast<char>(val % 10 + '0');
+			i--;
+			j--;
+		}
+		while (i >= 0 && carry == 1) {
+			int val = result[i] - '0' + carry;
+			carry = val / 10;
+			result[i] = static_cast<char>(val % 10 + '0');
+			i--;
+		}
+
+		if (carry == 1) {
+			return "1" + result;
+		}
+
+		return result;
+	}
+
+	int arrangeCoins(int n) {
+		int k = static_cast<long>(sqrt(n)*sqrt(2)) + 1;
+		while (k*k + k > 2 * n) {
+			k--;
+		}
+		return k;
+	} 
 };
 
 #endif

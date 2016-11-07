@@ -1,4 +1,7 @@
 using namespace std;
+
+#ifndef TRIE_H
+#define TRIE_H
 class TrieNode {
 public:
 	bool isWord;
@@ -67,6 +70,7 @@ public:
 		}
     }
 
+
 private:
     TrieNode* root;
 };
@@ -75,3 +79,5 @@ private:
 // Trie trie;
 // trie.insert("somestring");
 // trie.search("key");
+
+#endif
