@@ -1933,6 +1933,21 @@ public:
 		}
 	}
 
+	/*
+	Given an integer array with all positive numbers and no duplicates, 
+	find the number of possible combinations that add up to a positive integer target.
+	*/
+	int combinationSum4(vector<int>& nums, int target) {
+		vector<int> dp(target + 1, 0);
+		dp[0] = 1;
+		for (int i = 1; i <= target; i++) {
+			for (int num : nums) {
+				if (i >= num) dp[i] += dp[i - num];
+			}
+		}
+		return dp[target];
+	}
+
 	vector<vector<int>> combine(int n, int k) {
 		vector<vector<int>> result;
 		vector<int> list;
@@ -3875,32 +3890,6 @@ public:
 		return p1.second > p2.second;
 	}
 
-	//Clone an undirected graph. Each node in the graph contains a label and a list of its neighbors.
-	UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
-		if (!node) return NULL;
-		UndirectedGraphNode* newHead = new UndirectedGraphNode(node->label);
-		queue<UndirectedGraphNode*> myQueue;
-		map<UndirectedGraphNode*, UndirectedGraphNode*> myMap;
-		myQueue.push(node);
-		myMap.emplace(node, newHead);
-
-		while (!myQueue.empty()) {
-			UndirectedGraphNode* cur = myQueue.front();
-			myQueue.pop();
-			for (auto neighbor : cur->neighbors) {
-				if (myMap.find(neighbor) == myMap.end()) {
-					UndirectedGraphNode* aCopy = new UndirectedGraphNode(neighbor->label);
-					myMap.emplace(aCopy, neighbor);
-					myMap[cur]->neighbors.push_back(aCopy);
-					myQueue.push(neighbor);
-				}
-				else {
-					myMap[cur]->neighbors.push_back(myMap[neighbor]);
-				}
-			}
-		}
-		return newHead;
-	}
 
 	/*
 	Given a 2D board and a list of words from the dictionary, find all words in the board.
@@ -4114,34 +4103,48 @@ public:
 	vector<string> findItinerary(vector<pair<string, string>> tickets) {
 		vector<string> itineray;
 		if(tickets.empty()) return itineray;
-		unordered_map<string, priority_queue<string>> fromToMap;
+		unordered_map<string, multiset<string>> fromToMap;
 		for(auto ticket : tickets) {
-			string departure = ticket.first;
-			string arrival = ticket.second;
-			if(fromToMap.find(departure) == fromToMap.end()) {
-				priority_queue<string> arrivals;
-				arrivals.push(arrival);
-				fromToMap.emplace(departure, arrivals);
-			}
-			else {
-				fromToMap[departure].push(arrival);
-			}
+			fromToMap[ticket.first].insert(ticket.second);
 		}
 
-		dfsItineray("JKF", fromToMap, itineray);
+		dfsItineray("JFK", fromToMap, itineray);
 		vector<string> result(itineray.rbegin(), itineray.rend());
 		return result;
 	}
 
-	void dfsItineray(string departure, unordered_map<string, priority_queue<string>>& fromtToMap, vector<string>& itineray) {
-		if(fromtToMap.find(departure) != fromtToMap.end()) {
-			while(!fromtToMap[departure].empty()) {
-				dfsItineray(fromtToMap[departure].top(), fromtToMap, itineray);
-				fromtToMap[departure].pop();
-			}
+	void dfsItineray(string departure, unordered_map<string, multiset<string>>& fromtToMap, vector<string>& itineray) {
+		while (!fromtToMap[departure].empty()) {
+			string dest = *fromtToMap[departure].begin();
+			fromtToMap[departure].erase(fromtToMap[departure].begin());
+			dfsItineray(dest, fromtToMap, itineray);
 		}
 		itineray.push_back(departure);
 	}
+
+	/*
+	Given a binary tree, return the vertical order traversal of its nodes' values. 
+	(ie, from top to bottom, column by column).
+	*/
+	vector<vector<int>> verticalOrder(TreeNode* root) {
+		vector<vector<int>> res;
+		if (!root) return res;
+		map<int, vector<int>> m;
+		queue<pair<int, TreeNode*>> q;
+		q.push({ 0, root });
+		while (!q.empty()) {
+			auto a = q.front(); q.pop();
+			m[a.first].push_back(a.second->val);
+			if (a.second->left) q.push({ a.first - 1, a.second->left });
+			if (a.second->right) q.push({ a.first + 1, a.second->right });
+		}
+		for (auto a : m) {
+			res.push_back(a.second);
+		}
+		return res;
+	}
+
+
 };
 
 #endif

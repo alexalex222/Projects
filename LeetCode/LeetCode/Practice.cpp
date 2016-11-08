@@ -41,20 +41,17 @@ using namespace std;
 #include "Permutation.h"
 #include "Codec.h"
 #include "Calculator.h"
+#include "TicTacToe.h"
 
 
 int main() {
 	Solution mySolution = Solution();
 
-	TreeNode* root = new TreeNode(1);
-	root->left = new TreeNode(-2);
-	root->right = new TreeNode(-3);
-	root->left->left = new TreeNode(1);
-	root->left->right = new TreeNode(3);
-	root->right->left = new TreeNode(-2);
-	root->left->left->left = new TreeNode(-1);
-
-	int ret = mySolution.arrangeCoins(1804289383);
+	vector<int> v;
+	v.push_back(1);
+	v.push_back(2);
+	v.push_back(4);
+	int ret = mySolution.combinationSum4(v, 32);
 	
 	
 

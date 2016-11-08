@@ -168,6 +168,7 @@
     <ClInclude Include="RandomizedSet.h" />
     <ClInclude Include="RangeSum.h" />
     <ClInclude Include="StackQueue.h" />
+    <ClInclude Include="TicTacToe.h" />
     <ClInclude Include="Trie.h" />
     <ClInclude Include="Twitter.h" />
     <ClInclude Include="TwoSum.h" />
