@@ -2013,6 +2013,30 @@ public:
 		}
 	}
 
+	/*
+	Given a sorted positive integer array nums and an integer n, 
+	add/patch elements to the array such that any number in range [1, n] 
+	inclusive can be formed by the sum of some elements in the array. 
+	Return the minimum number of patches required.
+	*/
+	int minPatches(vector<int>& nums, int n) {
+		int result = 0;
+		long miss = 1;
+		int i = 0;
+		while (miss <= n) {
+			if (i < static_cast<int>(nums.size()) && nums[i] <= miss) {
+				miss += nums[i];
+				i++;
+			}
+			else {
+				miss += miss;
+				result++;
+			}
+		}
+		return result;
+	}
+
+
 	vector<string> letterCombinations(string digits) {
 		string trans[] = { "", " ", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz" };
 		vector<string> result;
@@ -3951,6 +3975,41 @@ public:
 	}
 
 	/*
+	Given an integer matrix, find the length of the longest increasing path.
+	From each cell, you can either move to four directions: left, right, up or down. 
+	You may NOT move diagonally or move outside of the boundary (i.e. wrap-around is not allowed).
+	*/
+	int longestIncreasingPath(vector<vector<int> >& matrix) {
+		if (matrix.empty() || matrix[0].empty()) return 0;
+		int res = 1, m = static_cast<int>(matrix.size()), n = static_cast<int>(matrix[0].size());
+		vector<vector<int> > dp(m, vector<int>(n, 0));
+		for (int i = 0; i < m; ++i) {
+			for (int j = 0; j < n; ++j) {
+				res = max(res, dfs(matrix, dp, i, j));
+			}
+		}
+		return res;
+	}
+	int dfs(vector<vector<int> > &matrix, vector<vector<int> > &dp, int i, int j) {
+		if (dp[i][j]) return dp[i][j];
+		vector<vector<int> > dirs = { { 0, -1 },{ -1, 0 },{ 0, 1 },{ 1, 0 } };
+		int mx = 1, m = static_cast<int>(matrix.size()), n = static_cast<int>(matrix[0].size());
+		for (auto a : dirs) {
+			int x = i + a[0], y = j + a[1];
+			if (x < 0 || x >= m || y < 0 || y >= n || matrix[x][y] <= matrix[i][j]) continue;
+			int len = 1 + dfs(matrix, dp, x, y);
+			mx = max(mx, len);
+		}
+		dp[i][j] = mx;
+		return mx;
+	}
+
+	bool isIncreasing(vector<int> path) {
+		if (path.size() < 2) return true;
+		return path[path.size() - 1] > path[path.size() - 2];
+	}
+
+	/*
 	A character in UTF8 can be from 1 to 4 bytes long, subjected to the following rules:
 	For 1-byte character, the first bit is a 0, followed by its unicode code.
 	For n-bytes character, the first n-bits are all one's, the n+1 bit is 0, 
@@ -4144,7 +4203,85 @@ public:
 		return res;
 	}
 
+	/*
+	Given a string that contains only digits 0-9 and a target value, 
+	return all possibilities to add binary operators (not unary) +, -, or * between the digits 
+	so they evaluate to the target value.
+	*/
+	vector<string> addOperators(string num, int target) {
+		vector<string> result;
+		dfsAddOperators(num, target, 0, 0, "", result);
+		return result;
+	}
 
+	void dfsAddOperators(string num, int target, long long prevNum, long long curNum, string expression, vector<string>& result) {
+		if (num.size() == 0 && curNum == target) {
+			result.push_back(expression);
+			return;
+		}
+		for (int len = 1; len <= static_cast<int>(num.size()); len++) {
+			string newNumString = num.substr(0, len);
+			if (newNumString.size() > 1 && newNumString[0] == '0') {
+				return;
+			}
+			string remainNum = num.substr(len, string::npos);
+			
+			if (expression.size() == 0) {
+				dfsAddOperators(remainNum, target, stoll(newNumString), stoll(newNumString), expression + newNumString, result);
+			}
+			else {
+				dfsAddOperators(remainNum, target, stoll(newNumString), curNum + stoll(newNumString), expression + "+" + newNumString, result);
+				dfsAddOperators(remainNum, target, -stoll(newNumString), curNum - stoll(newNumString), expression + "-" + newNumString, result);
+				dfsAddOperators(remainNum, target, stoll(newNumString)*prevNum, curNum - prevNum + stoll(newNumString)*prevNum, expression + "*" + newNumString, result);
+			}
+		}
+		return;
+	}
+
+	/*
+	You have a number of envelopes with widths and heights given as a pair of integers (w, h). 
+	One envelope can fit into another if and only if both the width and height of one envelope 
+	is greater than the width and height of the other envelope.
+	*/
+	int maxEnvelopes(vector<pair<int, int>>& envelopes) {
+		sort(envelopes.begin(), envelopes.end());
+		int n = static_cast<int>(envelopes.size());
+		vector<int> dp(n, 1);
+		int result = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < i; j++) {
+				if (envelopes[i].first > envelopes[j].first && envelopes[i].second > envelopes[j].second) {
+					dp[i] = max(dp[i], dp[j] + 1);
+				}
+			}
+			result = max(result, dp[i]);
+		}
+		return result;
+	}
+
+	/*
+	Given a string which contains only lowercase letters, 
+	remove duplicate letters so that every letter appear once and only once. 
+	You must make sure your result is the smallest in lexicographical order among all possible results.
+	*/
+	string removeDuplicateLetters(string s) {
+		string result = "0";
+		vector<int> asciiTable(26, 0);
+		vector<bool> recorded(26, false);
+		for (char c : s) asciiTable[c - 'a']++;
+		for (char c : s) {
+			asciiTable[c - 'a']--;
+			if (!recorded[c - 'a']) {
+				while (c < result.back() && asciiTable[result.back() - 'a'] > 0) {
+					recorded[result.back() - 'a'] = false;
+					result.pop_back();
+				}
+				result.push_back(c);
+				recorded[c - 'a'] = true;
+			}
+		}
+		return result.substr(1, string::npos);
+	}
 };
 
 #endif
