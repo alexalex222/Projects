@@ -3539,29 +3539,29 @@ public:
 	int pathSumIII(TreeNode* root, int sum) {
 		if (!root) return 0;
 		vector<int> path;
-		vector<vector<int>> paths;
-		dfsPathSum(root, sum, path, paths);
-		return static_cast<int>(paths.size());
+		vector<int> numPath;
+		numPath.push_back(0);
+		dfsPathSum(root, sum, path, numPath);
+		return numPath[0];
 	}
 
-	void dfsPathSum(TreeNode* root, int sum, vector<int>& path, vector<vector<int>>& paths) {
+	void dfsPathSum(TreeNode* root, int sum, vector<int>& path, vector<int>& numPath) {
 		if (!root) return;
 		if (root->val == sum) {
 			path.push_back(root->val);
-			paths.push_back(path);
+			numPath[0] = numPath[0] + 1;
 			path.pop_back();
-			return;
 		}
 
 		if (path.empty()) {
-			dfsPathSum(root->left, sum, path, paths);
-			dfsPathSum(root->right, sum, path, paths);
+			dfsPathSum(root->left, sum, path, numPath);
+			dfsPathSum(root->right, sum, path, numPath);
 		}
 
 		path.push_back(root->val);
 		sum = sum -  root->val;
-		dfsPathSum(root->left, sum, path, paths);
-		dfsPathSum(root->right, sum, path, paths);
+		dfsPathSum(root->left, sum, path, numPath);
+		dfsPathSum(root->right, sum, path, numPath);
 		path.pop_back();
 		return;
 	}
@@ -3992,7 +3992,23 @@ public:
 	}
 	int dfs(vector<vector<int> > &matrix, vector<vector<int> > &dp, int i, int j) {
 		if (dp[i][j]) return dp[i][j];
-		vector<vector<int> > dirs = { { 0, -1 },{ -1, 0 },{ 0, 1 },{ 1, 0 } };
+		vector<vector<int> > dirs;
+		vector<int> d1;
+		d1.push_back(0);
+		d1.push_back(1);
+		vector<int> d2;
+		d2.push_back(0);
+		d2.push_back(-1);
+		vector<int> d3;
+		d3.push_back(1);
+		d3.push_back(0);
+		vector<int> d4;
+		d4.push_back(-1);
+		d4.push_back(0);
+		dirs.push_back(d1);
+		dirs.push_back(d2);
+		dirs.push_back(d3);
+		dirs.push_back(d4);
 		int mx = 1, m = static_cast<int>(matrix.size()), n = static_cast<int>(matrix[0].size());
 		for (auto a : dirs) {
 			int x = i + a[0], y = j + a[1];
@@ -4190,12 +4206,12 @@ public:
 		if (!root) return res;
 		map<int, vector<int>> m;
 		queue<pair<int, TreeNode*>> q;
-		q.push({ 0, root });
+		q.push(pair<int, TreeNode*>( 0, root ));
 		while (!q.empty()) {
 			auto a = q.front(); q.pop();
 			m[a.first].push_back(a.second->val);
-			if (a.second->left) q.push({ a.first - 1, a.second->left });
-			if (a.second->right) q.push({ a.first + 1, a.second->right });
+			if (a.second->left) q.push(pair<int, TreeNode*>( a.first - 1, a.second->left ));
+			if (a.second->right) q.push(pair<int, TreeNode*>( a.first + 1, a.second->right ));
 		}
 		for (auto a : m) {
 			res.push_back(a.second);
@@ -4281,6 +4297,51 @@ public:
 			}
 		}
 		return result.substr(1, string::npos);
+	}
+
+	/*
+	Given a binary tree, find the maximum path sum.
+	For this problem, a path is defined as any sequence of nodes from some starting node to any node in the tree along the parent-child connections. 
+	The path must contain at least one node and does not need to go through the root.
+	*/
+	int maxPathSum(TreeNode* root) {
+		int maxSum = INT_MIN;
+		calcPathSum(root, maxSum);
+		return maxSum;
+	}
+
+	int calcPathSum(TreeNode* root, int& maxSum) {
+		if(!root) return 0;
+		int leftMaxSum = calcPathSum(root->left, maxSum);
+		int rightMaxSum = calcPathSum(root->right, maxSum);
+		int tempMax = max(root->val, max(root->val + leftMaxSum, root->val + rightMaxSum));
+		maxSum = max(maxSum, max(tempMax, root->val + leftMaxSum + rightMaxSum));
+		return tempMax;
+	}
+
+	/*
+	Given a non-empty array of integers, 
+	return the third maximum number in this array. 
+	If it does not exist, return the maximum number. The time complexity must be in O(n).
+	*/
+	int thirdMax(vector<int>& nums) {
+		set<int, std::greater<int>> mySet;
+		for(int num : nums) {
+			mySet.insert(num);
+		}
+		int counter = 0;
+		int thirdMaxNum = 0;
+		for(auto it = mySet.begin(); it != mySet.end(); it++) {
+			counter++;
+			if(it == mySet.begin()) {
+				thirdMaxNum = *it;
+			}
+			if(counter == 3) {
+				thirdMaxNum = *it;
+				break;
+			}
+		}
+		return thirdMaxNum;
 	}
 };
 
