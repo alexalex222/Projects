@@ -1,9 +1,11 @@
 #pragma once
 class NumMatrix {
 private:
+	vector<vector<int>> myMatrix;
 	vector<vector<int>> sumMatrix;
 public:
 	NumMatrix(vector<vector<int>> &matrix) {
+		myMatrix = matrix;
 		for (vector<int> nums : matrix) {
 			vector<int> accum;
 			accum.push_back(0);
@@ -15,7 +17,10 @@ public:
 	}
 
 	void update(int row, int col, int val) {
-
+		for (int i = col + 1; i < (sumMatrix[0].size()); i++) {
+			sumMatrix[row][i] = sumMatrix[row][i] + val - myMatrix[row][col];
+		}
+		myMatrix[row][col] = val;
 	}
 
 	int sumRegion(int row1, int col1, int row2, int col2) {

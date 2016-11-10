@@ -310,30 +310,56 @@ public:
 	//Given an array of strings, group anagrams together.
 	vector<vector<string>> groupAnagrams(vector<string>& strs) {
 		vector<vector<string>> result;
+		unordered_map<string, vector<string>> anagramMap;
 		for (string str : strs) {
-			if (result.size() == 0) {
-				vector<string> anagrams;
-				anagrams.push_back(str);
-				result.push_back(anagrams);
+			string temp = str;
+			sort(temp.begin(), temp.end());
+			if (anagramMap.find(temp) != anagramMap.end()) {
+				anagramMap[temp].push_back(str);
 			}
 			else {
-				for (size_t i = 0; i < result.size(); i++) {
-					if (isAnagram(result[i][0], str)) {
-						for (string s : result[i]) {
-							if (s == str) break;
-						}
-						result[i].push_back(str);
-						break;
-					}
-					if (i == result.size() - 1) {
-						vector<string> anagrams;
-						anagrams.push_back(str);
-						result.push_back(anagrams);
-					}
-				}
+				anagramMap.emplace(temp, vector<string>(1, str));
 			}
 		}
+		for (auto anagramGroup : anagramMap) {
+			result.push_back(anagramGroup.second);
+		}
+		return result;
+	}
 
+	/*
+	Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
+	Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
+	The order of output does not matter.
+	*/
+	vector<int> findAnagrams(string s, string p) {
+		vector<int> result;
+		vector<int> charMap(256, 0);
+		for (char c : p) {
+			charMap[c]++;
+		}
+
+
+		int left = 0;
+		int right = 0;
+		int count = static_cast<int>(p.size());
+		while (right < static_cast<int>(s.size())) {
+			if (charMap[s[right]] >= 1) {
+				count--;
+			}
+			charMap[s[right]]--;
+			right++;
+
+			if (count == 0) result.push_back(left);
+
+			if (right - left == static_cast<int>(p.size())) {
+				if (charMap[s[left]] >= 0) {
+					count++;
+				}
+				charMap[s[left]]++;
+				left++;
+			}
+		}
 		return result;
 	}
 
@@ -3316,8 +3342,12 @@ public:
 			return findKth(k - k / 2, nums1, nums2, start1, m2 + 1);
 		}
 	}
-
-	bool isMatch(string s, string p) {
+	/*
+	Implement wildcard pattern matching with support for '?' and '*'.
+	'?' Matches any single character.
+	'*' Matches any sequence of characters (including the empty sequence).
+	*/
+	bool isMatchWildcard(string s, string p) {
 		int lenS = static_cast<int>(s.length());
 		int lenP = static_cast<int>(p.length());
 		int sid = 0;
@@ -3347,6 +3377,15 @@ public:
 		}
 		while (p[pid] == '*') pid++;
 		return pid == lenP;
+	}
+
+	/*
+	Implement regular expression matching with support for '.' and '*'.
+	'.' Matches any single character.
+	'*' Matches zero or more of the preceding element.
+	*/
+	bool isMatchReg(string s, string p) {
+
 	}
 
 	bool wordBreak(string s, unordered_set<string>& wordDict) {

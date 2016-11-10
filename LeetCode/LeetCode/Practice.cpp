@@ -47,7 +47,7 @@ using namespace std;
 int main() {
 	Solution mySolution = Solution();
 
-	string ret = mySolution.removeDuplicateLetters("bcabc");
+	vector<int> ret = mySolution.findAnagrams("cbaebabacd", "abc");
 	
 	
 
