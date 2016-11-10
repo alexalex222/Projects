@@ -635,6 +635,36 @@ public:
 		return std::max(odd, even);
 	}
 
+
+	/*
+	The thief has found himself a new place for his thievery again. 
+	There is only one entrance to this area, called the "root." 
+	Besides the root, each house has one and only one parent house. 
+	After a tour, the smart thief realized that "all houses in this place forms a binary tree". 
+	It will automatically contact the police if two directly-linked houses were broken into on the same night.
+	Determine the maximum amount of money the thief can rob tonight without alerting the police.
+	*/
+	int rob(TreeNode* root) {
+		return dfsRob(root).first;
+	}
+
+	/*
+	rob_root = max(rob_L + rob_R , no_rob_L + no_nob_R + root.val)
+	no_rob_root = rob_L + rob_R
+	first means rob current node
+	second means not rob current node
+	*/
+	pair<int, int> dfsRob(TreeNode* root) {
+		pair<int, int> dp = make_pair(0, 0);
+		if(root) {
+			pair<int, int> rob_left = dfsRob(root->left);
+			pair<int, int> rob_right = dfsRob(root->right);
+			dp.second = rob_left.first + rob_right.first;
+			dp.first = max(dp.second, rob_left.second + rob_right.second + root->val);
+		}
+		return dp;
+	}
+
 	/*
 	Given a non-negative number represented as an array of digits, plus one to the number.
 	The digits are stored such that the most significant digit is at the head of the list.
@@ -4381,6 +4411,74 @@ public:
 			}
 		}
 		return thirdMaxNum;
+	}
+
+
+	/*
+	Given a set of intervals, for each of the interval i, 
+	check if there exists an interval j whose start point is bigger than or equal to the end point of the interval i, 
+	which can be called that j is on the "right" of i.
+	For any interval i, you need to store the minimum interval j's index, 
+	which means that the interval j has the minimum start point to build the "right" relationship for interval i. 
+	If the interval j doesn't exist, store -1 for the interval i. Finally, you need output the stored value of each interval as an array.
+	*/
+	vector<int> findRightInterval(vector<Interval>& intervals) {
+		int len = static_cast<int>(intervals.size());
+		vector<int> result(len, -1);
+		vector<int> v;
+		unordered_map<int, int> posMap;
+		for(int i = 0; i < len; i++) {
+			v.push_back(intervals[i].start);
+			posMap.emplace(intervals[i].start, i);
+		}
+		sort(v.begin(), v.end(), std::greater<int>());
+
+		for(int i = 0; i < len; i++) {
+			int j = 0;
+			while(j < len && intervals[i].end <= v[j]) {
+				j++;
+			}
+			j--;
+			
+			if(j >= 0) {
+				result[i] = posMap[v[j]];
+			}
+		}
+
+		return result;
+	}
+
+	/*
+	Given a non-empty string containing an out-of-order English representation of digits 0-9, output the digits in ascending order.
+	*/
+	string originalDigits(string s) {
+		string result = "";
+		vector<int> digitCount(10, 0);
+		map<char, int> charMap;
+		for(char c : s) {
+			if(charMap.find(c) != charMap.end()) {
+				charMap[c]++;
+			}
+			else {
+				charMap[c] = 1;
+			}
+		}
+		digitCount[0] = charMap['z'];
+		digitCount[2] = charMap['w'];
+		digitCount[4] = charMap['u'];
+		digitCount[6] = charMap['x'];
+		digitCount[8] = charMap['g'];
+		digitCount[3] = charMap['h'] - digitCount[8];
+		digitCount[5] = charMap['f'] - digitCount[4];
+		digitCount[7] = charMap['v'] - digitCount[5];
+		digitCount[1] = charMap['o'] - digitCount[0] - digitCount[2] - digitCount[4];
+		digitCount[9] = charMap['i'] - digitCount[5] - digitCount[6] - digitCount[8];
+
+		for(int i = 0; i <= 9; i++) {
+			if(digitCount[i] >= 1) result += string(digitCount[i], '0' + i);
+		}
+		
+		return result;
 	}
 };
 
