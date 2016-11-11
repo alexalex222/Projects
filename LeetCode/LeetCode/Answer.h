@@ -2716,6 +2716,28 @@ public:
 		return merge(intervals);
 	}
 
+	/*
+	Given a collection of intervals, find the minimum number of intervals 
+	you need to remove to make the rest of the intervals non-overlapping.
+	*/
+	int eraseOverlapIntervals(vector<Interval>& intervals) {
+		int len = static_cast<int>(intervals.size());
+		if (len <= 1) return 0;
+		int result = 0;
+		int last = 0;
+		sort(intervals.begin(), intervals.end(), compareInterval);
+		for (int i = 1; i < len; i++) {
+			if (intervals[i].start < intervals[last].end) {
+				result++;
+				if (intervals[i].end < intervals[last].end) last = i;
+			}
+			else {
+				last = i;
+			}
+		}
+		return result;
+	}
+
 	int closestValue(TreeNode* root, double target) {
 		if (!root) return INT_MAX;
 		if (!root->left && !root->right) return root->val;
@@ -4478,6 +4500,74 @@ public:
 			if(digitCount[i] >= 1) result += string(digitCount[i], '0' + i);
 		}
 		
+		return result;
+	}
+
+	/*
+	Given an encoded string, return it's decoded string.
+	The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. 
+	Note that k is guaranteed to be a positive integer.
+	You may assume that the input string is always valid; 
+	No extra white spaces, square brackets are well-formed, etc.
+	Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, k. 
+	For example, there won't be input like 3a or 2[4].
+	*/
+	string decodeString(string s) {
+		string result = "";
+		int len = static_cast<int>(s.size());
+		if (len < 1) return result;
+		stack<int> repeat;
+		stack<string> seqStack;
+		string oneSeq = "";
+		int i = 0;
+		while (i < len) {
+			char c = s[i];
+			if (s[i] >= '0' && s[i] <= '9') {
+				int num = 0;
+				while (s[i] >= '0' && s[i] <= '9' && i < len) {
+					num = num * 10 + s[i] - '0';
+					i++;
+				}
+				repeat.push(num);
+			}
+			else if (s[i] >= 'a' && s[i] <= 'z') {
+				oneSeq = "";
+				while (s[i] >= 'a' && s[i] <= 'z' && i < len) {
+					oneSeq += string(1, s[i]);
+					i++;
+				}
+				seqStack.push(oneSeq);
+			}
+			else if (s[i] == '[') {
+				seqStack.push(string(1, s[i]));
+				i++;
+			}
+			else if (s[i] == ']') {
+				oneSeq = "";
+				while (seqStack.top() != "[") {
+					oneSeq = seqStack.top() + oneSeq;
+					seqStack.pop();
+				}
+				seqStack.pop();
+				int repeatNum = repeat.top();
+				repeat.pop();
+				string temp = oneSeq;
+				while (repeatNum > 1) {
+					oneSeq += temp;
+					repeatNum--;
+				}
+				seqStack.push(oneSeq);
+				i++;
+			}
+			else {
+				i++;
+			}
+		}
+		while (!seqStack.empty())
+		{
+			result = seqStack.top() + result;
+			seqStack.pop();
+		}
 		return result;
 	}
 };

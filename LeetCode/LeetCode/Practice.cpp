@@ -47,7 +47,7 @@ using namespace std;
 int main() {
 	Solution mySolution = Solution();
 
-	vector<int> ret = mySolution.findAnagrams("cbaebabacd", "abc");
+	string ret = mySolution.decodeString("2[abc]3[cd]ef");
 	
 	
 
