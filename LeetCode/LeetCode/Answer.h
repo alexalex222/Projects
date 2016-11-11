@@ -4570,6 +4570,144 @@ public:
 		}
 		return result;
 	}
+
+	//Given an integer n, generate all structurally unique BST's (binary search trees) that store values 1...n.
+	vector<TreeNode*> generateTrees(int n) {
+		vector<TreeNode*> result;
+		if(n < 1) return result;
+		return buildBST(1, n);
+	}
+
+	vector<TreeNode*> buildBST(int left, int right) {
+		vector<TreeNode*> result;
+		if(left > right) {
+			result.push_back(NULL);
+			return result;
+		}
+
+		for(int i = left; i <= right; i++) {
+			vector<TreeNode*> leftTrees = buildBST(left, i - 1);
+			vector<TreeNode*> rightTrees = buildBST(i + 1, right);
+			for(TreeNode* leftTree : leftTrees) {
+				for(TreeNode* rightTree : rightTrees) {
+					TreeNode* root = new TreeNode(i);
+					root->left = leftTree;
+					root->right = rightTree;
+					result.push_back(root);
+				}
+			}
+		}
+		return result;
+	}
+
+	/*
+	For a undirected graph with tree characteristics, we can choose any node as the root. 
+	The result graph is then a rooted tree. 
+	Among all possible rooted trees, those with minimum height are called minimum height trees (MHTs). 
+	Given such a graph, write a function to find all the MHTs and return a list of their root labels.
+	*/
+	vector<int> findMinHeightTrees(int n, vector<pair<int, int>>& edges) {
+		vector<int> result;
+		if(n == 0) return result;
+		if(n == 1) {
+			result.push_back(0);
+			return result;
+		}
+		vector<set<int>> graphMap(n, set<int>());
+		vector<int> depth(n, 0);
+		for(pair<int, int> edge : edges) {
+			int node1 = edge.first;
+			int node2 = edge.second;
+			graphMap[node1].insert(node2);
+			depth[node1]++;
+			graphMap[node2].insert(node1);
+			depth[node2]++;
+		}
+
+		vector<int> leaves;
+		for(int i = 0; i < n; i++) {
+			if(depth[i] == 1) leaves.push_back(i);
+		}
+
+		vector<int> nextLeaves;
+		
+		while(n > 2) {
+			n = n - static_cast<int>(leaves.size());
+			while(!leaves.empty()) {
+				int leave = leaves.back();
+				leaves.pop_back();
+				for(int i : graphMap[leave]) {
+					depth[i]--;
+					if(depth[i] == 1) nextLeaves.push_back(i);
+				}
+			}
+			leaves = nextLeaves;
+			nextLeaves = vector<int>();
+		}
+		return leaves;
+	}
+
+	/*
+	Suppose you have a random list of people standing in a queue. Each person is described by a pair of integers (h, k), 
+	where h is the height of the person and k is the number of people in front of this person who have a height greater than or equal to h.
+	Write an algorithm to reconstruct the queue.
+	*/
+	vector<pair<int, int>> reconstructQueue(vector<pair<int, int>>& people) {
+		sort(people.begin(), people.end(), compareHeight);
+		vector<pair<int, int>> result;
+		for(auto person : people) {
+			result.insert(result.begin() + person.second, person);
+		}
+		return result;
+	}
+
+	static bool compareHeight(pair<int, int> p1, pair<int, int> p2) {
+		if(p1.first == p2.first) {
+			return p1.second < p2.second;
+		}
+		else {
+			return p1.first > p2.first;
+		}
+	}
+
+	/*
+	There are N gas stations along a circular route, where the amount of gas at station i is gas[i].
+	You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from station i to its next station (i+1). 
+	You begin the journey with an empty tank at one of the gas stations.
+	Return the starting gas station's index if you can travel around the circuit once, otherwise return -1.
+	*/
+	int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+		int n = static_cast<int>(gas.size());
+		if(n == 0) return -1;
+		int i = 0;
+		while(i < n) {
+			int remainGas = 0;
+			int currIdx = i;
+			remainGas = gas[i] - cost[i];
+			if(remainGas < 0) {
+				i++;
+				continue;
+			}		
+			currIdx = (currIdx + 1)%n;
+			while(currIdx != i) {
+				remainGas += gas[currIdx] - cost[currIdx];
+				if(remainGas < 0) break;
+				currIdx = (currIdx + 1)%n;
+			}
+			if(currIdx == i) return i;
+			else i = max(i+1, currIdx);
+		}
+		return -1;
+	}
+
+	/*
+	Write a program to find the nth super ugly number.
+	Super ugly numbers are positive numbers whose all prime factors are in the given prime list primes of size k. 
+	For example, [1, 2, 4, 7, 8, 13, 14, 16, 19, 26, 28, 32] is the sequence of the first 12 super ugly numbers given primes = [2, 7, 13, 19] of size 4.
+	*/
+	int nthSuperUglyNumber(int n, vector<int>& primes)  {
+
+	}
 };
 
 #endif
