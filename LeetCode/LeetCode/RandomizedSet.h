@@ -41,6 +41,10 @@ public:
 	}
 };
 
+/*
+Design a data structure that supports all following operations in average O(1) time.
+Note: Duplicate elements are allowed.
+*/
 class RandomizedCollection {
 private:
 	vector<int> nums;
@@ -72,10 +76,8 @@ public:
 			return false;
 		}
 		int last = nums.back();
-		int lastIndexOfLast = static_cast<int>(myMap[last].size()) - 1;
-		int lastIndexOfVal = static_cast<int>(myMap[val].size()) - 1;
-		myMap[last][lastIndexOfLast] = myMap[val][lastIndexOfVal];
-		nums[myMap[last][lastIndexOfLast]] = last;
+		myMap[last].back() = myMap[val].back();
+		nums[myMap[val].back()] = last;
 		nums.pop_back();
 		myMap[val].pop_back();
 		if (myMap[val].size() == 0) {

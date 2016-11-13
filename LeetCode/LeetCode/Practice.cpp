@@ -42,12 +42,16 @@ using namespace std;
 #include "Codec.h"
 #include "Calculator.h"
 #include "TicTacToe.h"
+#include "NestedInteger.h"
+#include "PeekingIterator.h"
 
 
 int main() {
 	Solution mySolution = Solution();
 
-	string ret = mySolution.decodeString("2[abc]3[cd]ef");
+	vector<vector<char>> v{ { '0'}};
+
+	vector<string> ret = mySolution.generateAbbreviations("word");
 	
 	
 

@@ -65,71 +65,6 @@ struct Interval {
 	Interval(int s, int e) : start(s), end(e) {}
 };
 
-// This is the interface that allows for creating nested lists.
-// You should not implement it, or speculate about its implementation
-class NestedInteger {
-public:
-	// Constructor initializes an empty nested list.
-	NestedInteger();
-
-	// Constructor initializes a single integer.
-	NestedInteger(int value);
-
-	// Return true if this NestedInteger holds a single integer, rather than a nested list.
-	bool isInteger() const;
-
-	// Return the single integer that this NestedInteger holds, if it holds a single integer
-	// The result is undefined if this NestedInteger holds a nested list
-	int getInteger() const;
-
-	// Set this NestedInteger to hold a single integer.
-	void setInteger(int value);
-
-	// Set this NestedInteger to hold a nested list and adds a nested integer to it.
-	void add(const NestedInteger &ni);
-
-	// Return the nested list that this NestedInteger holds, if it holds a nested list
-	// The result is undefined if this NestedInteger holds a single integer
-	const vector<NestedInteger> &getList() const;
-};
-
-/**
-* // This is the interface that allows for creating nested lists.
-* // You should not implement it, or speculate about its implementation
-* class NestedInteger {
-*   public:
-*     // Return true if this NestedInteger holds a single integer, rather than a nested list.
-*     bool isInteger() const;
-*
-*     // Return the single integer that this NestedInteger holds, if it holds a single integer
-*     // The result is undefined if this NestedInteger holds a nested list
-*     int getInteger() const;
-*
-*     // Return the nested list that this NestedInteger holds, if it holds a nested list
-*     // The result is undefined if this NestedInteger holds a single integer
-*     const vector<NestedInteger> &getList() const;
-* };
-*/
-class NestedIterator {
-public:
-	NestedIterator(vector<NestedInteger> &nestedList) {
-
-	}
-
-	int next() {
-
-	}
-
-	bool hasNext() {
-
-	}
-};
-
-/**
-* Your NestedIterator object will be instantiated and called as such:
-* NestedIterator i(nestedList);
-* while (i.hasNext()) cout << i.next();
-*/
 
 struct Point {
 	int x;
@@ -2663,6 +2598,10 @@ public:
 		return dist;
 	}
 
+	/*
+	Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), 
+	determine if a person could attend all meetings.
+	*/
 	bool canAttendMeetings(vector<Interval>& intervals) {
 		sort(intervals.begin(), intervals.end(), compareInterval);
 		for (int i = 0; i < static_cast<int>(intervals.size()) - 1; i++) {
@@ -2679,6 +2618,30 @@ public:
 			return interval1.start < interval2.start;
 		}
 
+	}
+
+	/*
+	Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), 
+	find the minimum number of conference rooms required.
+	*/
+	int minMeetingRooms(vector<Interval>& intervals) {
+		int n = static_cast<int>(intervals.size());
+		if (n < 1) return 0;
+		int count;
+		sort(intervals.begin(), intervals.end(), compareInterval);
+		priority_queue<int, vector<int>, greater<int>> pq;
+		pq.push(intervals[0].end);
+
+		for (int i = 1; i < n; i++) {
+			if (intervals[i].start < pq.top()) {
+				count++;
+			}
+			else {
+				pq.pop();
+			}
+			pq.push(intervals[i].end);
+		}
+		return count;
 	}
 
 	vector<Interval> merge(vector<Interval>& intervals) {
@@ -4706,7 +4669,271 @@ public:
 	For example, [1, 2, 4, 7, 8, 13, 14, 16, 19, 26, 28, 32] is the sequence of the first 12 super ugly numbers given primes = [2, 7, 13, 19] of size 4.
 	*/
 	int nthSuperUglyNumber(int n, vector<int>& primes)  {
+		vector<int> uglyNums(1, 1);
+		vector<int> idx(primes.size(), 0);
+		while (static_cast<int>(uglyNums.size()) < n) {
+			vector<int> temp;
+			int next = INT_MAX;
+			for (int i = 0; i < static_cast<int>(primes.size()); i++) {
+				int cur = uglyNums[idx[i]] * primes[i];
+				next = min(next, cur);
+				temp.push_back(cur);
+			}
+			for (int i = 0; i < static_cast<int>(primes.size()); i++) {
+				if (next == temp[i]) idx[i]++;
+			}
+			uglyNums.push_back(next);
+		}
+		return uglyNums.back();
+	}
 
+	/*
+	Additive number is a string whose digits can form additive sequence.
+	A valid additive sequence should contain at least three numbers. 
+	Except for the first two numbers, each subsequent number in the sequence must be the sum of the preceding two.
+	*/
+	bool isAdditiveNumber(string num) {
+		int n = static_cast<int>(num.size());
+		for (int len1 = 1; len1 <= n / 2; len1++) {
+			for (int len2 = 1; len2 <= (n - len1) / 2; len2++) {
+				if (isAdditiveNumber(num.substr(0, len1), num.substr(len1, len2), num.substr(len1 + len2))) return true;
+			}
+		}
+		return false;
+	}
+
+	bool isAdditiveNumber(string a, string b, string c) {
+		if (a[0] == '0' && a.size() > 1) return false;
+		if (b[0] == '0' && b.size() > 1) return false;
+		string sum = "";
+		int carry = 0;
+		int i = static_cast<int>(a.size()) - 1;
+		int j = static_cast<int>(b.size()) - 1;
+		while (i >= 0 || j >= 0) {
+			int d = (i >= 0 ? a[i--] - '0' : 0) + (j >= 0 ? b[j--] - '0' : 0) + carry;
+			char dd = static_cast<char>(d % 10 + '0');
+			sum = dd + sum;
+			carry = d / 10;
+		}
+		if (carry) sum = "1" + sum;
+
+		if (sum == c) return true;
+		if (c.size() <= sum.size() || sum.compare(c.substr(0, sum.size())) != 0) return false;
+		return isAdditiveNumber(b, sum, c.substr(sum.size()));
+	}
+
+	/*
+	Given a 2D grid, each cell is either a wall 'W', an enemy 'E' or empty '0' (the number zero), 
+	return the maximum enemies you can kill using one bomb.
+	*/
+	int maxKilledEnemies(vector<vector<char>>& grid) {
+		if (grid.empty() || grid[0].empty()) return 0;
+		int result = 0;
+		int rows = static_cast<int>(grid.size());
+		int cols = static_cast<int>(grid[0].size());
+		vector<vector<int>> v1(rows, vector<int>(cols, 0));
+		vector<vector<int>> v2 = v1;
+		vector<vector<int>> v3 = v1;
+		vector<vector<int>> v4 = v1;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (j == 0) {
+					if (grid[i][j] != 'E') v1[i][j] = 0;
+					else v1[i][j] = 1;
+				}
+				else {
+					if (grid[i][j] == 'W') v1[i][j] = 0;
+					else if (grid[i][j] == '0') v1[i][j] = v1[i][j - 1];
+					else v1[i][j] = v1[i][j - 1] + 1;
+				}
+			}
+
+			for (int j = cols - 1; j >= 0; j--) {
+				if (j == cols - 1) {
+					if (grid[i][j] != 'E') v2[i][j] = 0;
+					else v2[i][j] = 1;
+				}
+				else {
+					if (grid[i][j] == 'W') v2[i][j] = 0;
+					else if (grid[i][j] == '0') v2[i][j] = v2[i][j + 1];
+					else v2[i][j] = v2[i][j + 1] + 1;
+				}
+			}
+		}
+
+		for (int j = 0; j < cols; j++) {
+			for (int i = 0; i < rows; i++) {
+				if (i == 0) {
+					if (grid[i][j] != 'E') v3[i][j] = 0;
+					else v3[i][j] = 1;
+				}
+				else {
+					if (grid[i][j] == 'W') v3[i][j] = 0;
+					else if (grid[i][j] == '0') v3[i][j] = v3[i - 1][j];
+					else v3[i][j] = v3[i - 1][j] + 1;
+				}
+			}
+
+			for (int i = rows - 1; i >= 0; i--) {
+				if (i == rows - 1) {
+					if (grid[i][j] != 'E') v4[i][j] = 0;
+					else v4[i][j] = 1;
+				}
+				else {
+					if (grid[i][j] == 'W') v4[i][j] = 0;
+					else if (grid[i][j] == '0') v4[i][j] = v4[i + 1][j];
+					else v4[i][j] = v4[i + 1][j] + 1;
+				}
+			}
+		}
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (grid[i][j] == '0') {
+					result = max(result, v1[i][j] + v2[i][j] + v3[i][j] + v4[i][j]);
+				}
+			}
+		}
+		return result;
+	}
+
+	/*
+	A group of two or more people wants to meet and minimize the total travel distance. 
+	You are given a 2D grid of values 0 or 1, where each 1 marks the home of someone in the group. 
+	The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+	*/
+	int minTotalDistance(vector<vector<int>>& grid) {
+		int sum = 0;
+		int rows = static_cast<int>(grid.size());
+		int cols = static_cast<int>(grid[0].size());
+		vector<int> xs;
+		vector<int> ys;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (grid[i][j] == 1) {
+					xs.push_back(j);
+					ys.push_back(i);
+				}
+			}
+		}
+		sort(xs.begin(), xs.end());
+		for (int i : xs) {
+			sum += abs(i - xs[xs.size() / 2]);
+		}
+		for (int i : ys) {
+			sum += abs(i - ys[ys.size() / 2]);
+		}
+		return sum;
+	}
+
+	/*
+	Given an Android 3x3 key lock screen and two integers m and n, where 1 ¡Ü m ¡Ü n ¡Ü 9, 
+	count the total number of unlock patterns of the Android lock screen, 
+	which consist of minimum of m keys and maximum n keys.
+	*/
+	int numberOfPatterns(int m, int n) {
+		int result;
+		vector<vector<int>> jumps(10, vector<int>(10, 0));
+		vector<bool> visited(10, false);
+		jumps[1][3] = jumps[3][1] = 2;
+		jumps[4][6] = jumps[6][4] = 5;
+		jumps[7][9] = jumps[9][7] = 8;
+		jumps[1][7] = jumps[7][1] = 4;
+		jumps[2][8] = jumps[8][2] = 5;
+		jumps[3][9] = jumps[9][3] = 6;
+		jumps[1][9] = jumps[9][1] = jumps[3][7] = jumps[7][3] = 5;
+		result += dfsPattern(1, 1, 0, m, n, jumps, visited) * 4;
+		result += dfsPattern(2, 1, 0, m, n, jumps, visited) * 4;
+		result += dfsPattern(5, 1, 0, m, n, jumps, visited);
+		return result;
+ 	}
+
+	int dfsPattern(int num, int len, int result, int m, int n, vector<vector<int>>& jumps, vector<bool>& visited) {
+		if (len >= m) result++;
+		len++;
+		if (len > n) return result;
+		visited[num] = true;
+		for (int next = 1; next <= 9; next++) {
+			int jump = jumps[num][next];
+			if (!visited[next] && (jump == 0 || visited[jump])) {
+				result = dfsPattern(next, len, result, m, n, jumps, visited);
+			}
+		}
+		visited[num] = false;
+		return result;
+	}
+
+	//Write a function to generate the generalized abbreviations of a word.
+	vector<string> generateAbbreviations(string word) {
+		vector<string> result;
+		for (int i = 0; i < static_cast<int>(pow(2, word.size())); i++) {
+			string out = "";
+			int cnt = 0;
+			int t = i;
+			for (int j = 0; j < static_cast<int>(word.size()); j++) {
+				if ((t & 1) == 1) {
+					cnt++;
+					if (j == static_cast<int>(word.size()) - 1) out += to_string(cnt);
+				}
+				else {
+					if (cnt != 0) {
+						out += to_string(cnt);
+						cnt = 0;
+					}
+					out += word[j];
+				}
+				t = t >> 1;
+			}
+			result.push_back(out);
+		}
+		return result;
+	}
+
+	//Given n points on a 2D plane, find if there is such a line parallel to y-axis that reflect the given points.
+	bool isReflected(vector<pair<int, int>>& points) {
+		if (points.size() < 2) return true;
+		unordered_map<int, unordered_set<int>> pointMap;
+		int minX = INT_MAX;
+		int maxX = INT_MIN;
+		for (auto point : points) {
+			minX = min(minX, point.first);
+			maxX = max(maxX, point.first);
+			pointMap[point.first].insert(point.second);
+		}
+		double mid = static_cast<double>(minX + maxX) / 2;
+		for (auto point : points) {
+			int reflX = static_cast<int>(mid * 2) - point.first;
+			if (pointMap.find(reflX) == pointMap.end() || pointMap[reflX].find(point.second) == pointMap[reflX].end()) return false;
+		}
+		return true;
+	}
+	
+	/*
+	Given n nodes labeled from 0 to n - 1 and a list of undirected edges (each edge is a pair of nodes), 
+	write a function to check whether these edges make up a valid tree.
+	*/
+	bool validTree(int n, vector<pair<int, int>>& edges) {
+		vector<unordered_set<int>> g(n, unordered_set<int>());
+		unordered_set<int> visited;
+		queue<int> q;
+		q.push(0);
+		visited.insert(0);
+		for (auto edge : edges) {
+			g[edge.first].insert(edge.second);
+			g[edge.second].insert(edge.first);
+		}
+		while (!q.empty()) {
+			int t = q.front();
+			q.pop();
+			
+			for (int a : g[t]) {
+				if (visited.find(a) != visited.end()) return false;
+				q.push(a);
+				visited.insert(a);
+				g[a].erase(t);
+			}
+		}
+		return static_cast<int>(visited.size()) == n;
 	}
 };
 

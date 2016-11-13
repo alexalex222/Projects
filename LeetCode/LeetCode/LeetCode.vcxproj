@@ -160,8 +160,10 @@
     <ClInclude Include="MedianFinder.h" />
     <ClInclude Include="MinStack.h" />
     <ClInclude Include="MovingAverage.h" />
+    <ClInclude Include="NestedInteger.h" />
     <ClInclude Include="NumArray.h" />
     <ClInclude Include="NumMatrix.h" />
+    <ClInclude Include="PeekingIterator.h" />
     <ClInclude Include="Permutation.h" />
     <ClInclude Include="PhoneDirectory.h" />
     <ClInclude Include="QueueStack.h" />

@@ -98,5 +98,11 @@
     <ClInclude Include="TicTacToe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NestedInteger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PeekingIterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
