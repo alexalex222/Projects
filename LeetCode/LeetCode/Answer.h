@@ -4935,6 +4935,82 @@ public:
 		}
 		return static_cast<int>(visited.size()) == n;
 	}
+
+	/*
+	Any live cell with fewer than two live neighbors dies, as if caused by under-population.
+	Any live cell with two or three live neighbors lives on to the next generation.
+	Any live cell with more than three live neighbors dies, as if by over-population..
+	Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+	0: dead -> dead
+	1: live -> live
+	2: live -> dead
+	3: dead -> live
+	*/
+	void gameOfLife(vector<vector<int>>& board) {
+		int rows = static_cast<int>(board.size());
+		if (rows == 0) return;
+		int cols = static_cast<int>(board[0].size());
+		if (cols == 0) return;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				int stat = checkNeighbor(board, i, j);
+				if (stat == 2) continue;
+				if (stat == 3) board[i][j] = board[i][j] == 0 ? 3 : 1;
+				else board[i][j] = board[i][j] == 0 ? 0 : 2;
+			}
+		}
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				board[i][j] = board[i][j] % 2;
+			}
+		}
+	}
+
+	int checkNeighbor(vector<vector<int>>& board, int x, int y) {
+		int count = 0;
+		int row = static_cast<int>(board.size());
+		int col = static_cast<int>(board[0].size());
+		for (int i = x - 1; i <= x + 1; i++) {
+			for (int j = y - 1; j <= y + 1; j++) {
+				if (i < 0 || i >= row || j < 0 || j >= col || (i == x && j == y)) continue;
+				if (board[i][j] == 1 || board[i][j] == 2) count++;
+			}
+		}
+		return count;
+	}
+
+	/*
+	Given two integers representing the numerator and denominator of a fraction, return the fraction in string format.
+	If the fractional part is repeating, enclose the repeating part in parentheses
+	*/
+	string fractionToDecimal(int numerator, int denominator) {
+		int s1 = numerator >= 0 ? 1 : -1;
+		int s2 = denominator >= 0 ? 1 : -1;
+		long long num = abs((long long)numerator);
+		long long den = abs((long long)denominator);
+		long long out = num / den;
+		long long rem = num % den;
+		unordered_map<long long, int> m;
+		string res = to_string(out);
+		if (s1 * s2 == -1 && (out > 0 || rem > 0)) res = "-" + res;
+		if (rem == 0) return res;
+		res += ".";
+		string s = "";
+		int pos = 0;
+		while (rem != 0) {
+			if (m.find(rem) != m.end()) {
+				s.insert(m[rem], "(");
+				s += ")";
+				return res + s;
+			}
+			m[rem] = pos;
+			s += to_string((rem * 10) / den);
+			rem = (rem * 10) % den;
+			++pos;
+		}
+		return res + s;
+	}
 };
 
 #endif

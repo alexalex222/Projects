@@ -49,9 +49,9 @@ using namespace std;
 int main() {
 	Solution mySolution = Solution();
 
-	vector<vector<char>> v{ { '0'}};
+	vector<vector<int>> v{ { 1,1}};
 
-	vector<string> ret = mySolution.generateAbbreviations("word");
+	string ret = mySolution.fractionToDecimal(-1, -2147483648);
 	
 	
 
