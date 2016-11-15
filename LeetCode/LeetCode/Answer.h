@@ -4827,7 +4827,7 @@ public:
 	}
 
 	/*
-	Given an Android 3x3 key lock screen and two integers m and n, where 1 ¡Ü m ¡Ü n ¡Ü 9, 
+	Given an Android 3x3 key lock screen and two integers m and n, where 1 Â¡Ãœ m Â¡Ãœ n Â¡Ãœ 9, 
 	count the total number of unlock patterns of the Android lock screen, 
 	which consist of minimum of m keys and maximum n keys.
 	*/
@@ -5010,6 +5010,54 @@ public:
 			++pos;
 		}
 		return res + s;
+	}
+	
+	/*
+	Given an m x n matrix of non-negative integers representing the height of each unit cell in a continent, 
+	the "Pacific ocean" touches the left and top edges of the matrix and the "Atlantic ocean" touches the right and bottom edges.
+	Water can only flow in four directions (up, down, left, or right) from a cell to another one with height equal or lower.
+	Find the list of grid coordinates where water can flow to both the Pacific and Atlantic ocean.
+	*/
+	vector<pair<int, int>> pacificAtlantic(vector<vector<int>>& matrix) {
+		vector<pair<int, int>> result;
+		int m = static_cast<int>(matrix.size());
+		if(m == 0) return result;
+		int n = static_cast<int>(matrix[0].size());
+		vector<vector<bool>> pacific(m, vector<bool>(n, false));
+		vector<vector<bool>> atlantic(m, vector<bool>(n, false));
+		for(int i = 0; i < m; i++) {
+			dfsWaterFlow(matrix, pacific, INT_MIN, m, n, i, 0);
+			dfsWaterFlow(matrix, atlantic, INT_MIN, m, n, i, n - 1);
+		}
+		for(int j = 0; j < n; j++) {
+			dfsWaterFlow(matrix, pacific, INT_MIN, m, n, 0, j);
+			dfsWaterFlow(matrix, atlantic, INT_MIN, m, n, m - 1, j);
+		}
+		for(int i = 0; i < m; i++) {
+			for(int j = 0; j < n; j++) {
+				if(pacific[i][j] && atlantic[i][j]) {
+					result.push_back(pair<int, int>(i, j));
+				}
+			}
+		}
+		return result;
+	}
+
+	void dfsWaterFlow(vector<vector<int>>& matrix, vector<vector<bool>>& visited, int preHight, int rows, int cols, int i, int j) {
+		if(i < 0 || i >= rows || j < 0 || j >= cols || visited[i][j] || matrix[i][j] < preHight) return;
+		visited[i][j] = true;
+		dfsWaterFlow(matrix, visited, matrix[i][j], rows, cols, i - 1, j);
+		dfsWaterFlow(matrix, visited, matrix[i][j], rows, cols, i + 1, j);
+		dfsWaterFlow(matrix, visited, matrix[i][j], rows, cols, i, j - 1);
+		dfsWaterFlow(matrix, visited, matrix[i][j], rows, cols, i, j + 1);
+	}
+
+	/*
+	Given a non-negative integer num represented as a string, 
+	remove k digits from the number so that the new number is the smallest possible.
+	*/
+	string removeKdigits(string num, int k) {
+
 	}
 };
 
