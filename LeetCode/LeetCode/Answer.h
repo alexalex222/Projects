@@ -4827,7 +4827,7 @@ public:
 	}
 
 	/*
-	Given an Android 3x3 key lock screen and two integers m and n, where 1 ¡Ü m ¡Ü n ¡Ü 9, 
+	Given an Android 3x3 key lock screen and two integers m and n,
 	count the total number of unlock patterns of the Android lock screen, 
 	which consist of minimum of m keys and maximum n keys.
 	*/
@@ -5057,8 +5057,60 @@ public:
 	remove k digits from the number so that the new number is the smallest possible.
 	*/
 	string removeKdigits(string num, int k) {
-
+		string result = "";
+		int n = static_cast<int>(num.size());
+		int keep = n - k;
+		for (char c : num) {
+			while (k && result.size() && result.back() > c) {
+				result.pop_back();
+				k--;
+			}
+			result.push_back(c);
+		}
+		result.resize(keep);
+		while (!result.empty() && result[0] == '0') result.erase(result.begin());
+		return result.empty() ? "0" : result;
 	}
+
+	/*
+	There is a new alien language which uses the latin alphabet. However, 
+	the order among letters are unknown to you. 
+	You receive a list of words from the dictionary, 
+	where words are sorted lexicographically by the rules of this new language. 
+	Derive the order of letters in this language.
+	*/
+	string alienOrder(vector<string>& words) {
+		int n = static_cast<int>(words.size());
+		if (n == 0) return "";
+		unordered_map<char, bool> used;
+		unordered_map<char, vector<char>> charOrder;
+		for (string word : words) {
+			for (char c : word) {
+				if (used.find(c) == used.end()) used.insert(pair<char, bool>(c, false));
+			}
+		}
+		for (int i = 1; i < n; i++) {
+			int j = i - 1;
+			string pre = words[j];
+			string cur = words[i];
+			while (j < min(static_cast<int>(pre.size()), static_cast<int>(cur.size()))) {
+				if (pre[j] != cur[j]) {
+					if (charOrder.find(pre[j]) == charOrder.end()) {
+						vector<char> afters;
+						afters.push_back(cur[j]);
+						charOrder.emplace(pre[j], afters);
+					}
+					else {
+						charOrder[pre[j]].push_back(cur[j]);
+					}
+					break;
+				}
+				j++;
+			}
+		}
+	}
+
+	bool topologicalSort(
 };
 
 #endif
