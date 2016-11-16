@@ -5110,7 +5110,113 @@ public:
 		}
 	}
 
-	bool topologicalSort(
+
+	/*
+	Given a non-empty string check if it can be constructed by taking a substring of it and appending multiple copies of the substring together. 
+	You may assume the given string consists of lowercase English letters only and its length will not exceed 10000.
+	*/
+	bool repeatedSubstringPattern(string str)  {
+		int n = static_cast<int>(str.size());
+		if(n == 0) return false;
+		for(int subLen = 1; subLen < n/2 + 1; subLen++) {
+			if(n%subLen == 0) {
+				string newStr = "";
+				for(int i = 0; i < n/subLen; i++) {
+					newStr += str.substr(0, subLen);
+				}
+				if(str == newStr) return true;
+			}
+		}
+		return false;
+	}
+
+	/*
+	Given n points in the plane that are all pairwise distinct, 
+	a "boomerang" is a tuple of points (i, j, k) such that the distance between i and j equals the distance between i and k (the order of the tuple matters).
+	*/
+	int numberOfBoomerangs(vector<pair<int, int>>& points) {
+		int result = 0;
+		int n = static_cast<int>(points.size());
+		for(int i = 0; i < n; i++) {
+			unordered_map<int, int> distMap;
+			for(int j = 0; j < n; j++) {
+				if(i == j) continue;
+				int dist = (points[i].first - points[j].first)*(points[i].first - points[j].first) + (points[i].second - points[j].second)*(points[i].second - points[j].second);
+				if(distMap.find(dist) == distMap.end()) distMap.insert(pair<int, int>(dist, 1));
+				else distMap[dist]++;
+			}
+			for(pair<int, int> p : distMap) {
+				result += p.second*(p.second - 1);
+			}
+		}
+		return result;
+	}
+
+	/*
+	Given a non-empty integer array of size n, 
+	find the minimum number of moves required to make all array elements equal, where a move is incrementing n - 1 elements by 1.
+	*/
+	int minMoves(vector<int>& nums) {
+		int result = 0;
+		int sum = 0;
+		int minNum = INT_MAX;
+		for(int num : nums) {
+			minNum = min(minNum, num);
+			sum += num;
+		}
+		return sum - minNum*nums.size();
+	}
+
+	/*
+	Assume you are an awesome parent and want to give your children some cookies. 
+	But, you should give each child at most one cookie. Each child i has a greed factor gi, 
+	which is the minimum size of a cookie that the child will be content with; and each cookie j has a size sj. If sj >= gi, 
+	we can assign the cookie j to the child i, 
+	and the child i will be content. Your goal is to maximize the number of your content children and output the maximum number.
+	*/
+	int findContentChildren(vector<int>& g, vector<int>& s)  {
+		sort(g.begin(), g.end());
+		sort(s.begin(), s.end());
+		int nG = static_cast<int>(g.size());
+		int nS = static_cast<int>(s.size());
+		int satis = 0;
+		int j = 0;
+		for(int i = 0; i < nG; i++) {
+			while(j < nS && s[j] < g[i]) {
+				j++;
+			}
+			if(j < nS) {
+				satis++;
+				j++;
+			}
+		}
+		return satis;
+	}
+
+	/*
+	each of the rows and columns are sorted in ascending order
+	find the kth smallest element in the matrix.
+	Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+	*/
+	int kthSmallest(vector<vector<int>>& matrix, int k) {
+		priority_queue<int> pq;
+		int n = static_cast<int>(matrix.size());
+		for(int i = 0; i < n; i++) {
+			for(int j = 0; j < n; j++) {
+				pq.push(matrix[i][j]);
+				if(static_cast<int>(pq.size()) > k) pq.pop();
+			}
+		}
+		return pq.top();
+	}
+
+	/*
+	A sequence of number is called arithmetic 
+	if it consists of at least three elements and if the difference between any two consecutive elements is the same.
+	*/
+	int numberOfArithmeticSlices(vector<int>& A) {
+
+	}
 };
 
 #endif
