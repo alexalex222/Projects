@@ -2718,6 +2718,12 @@ public:
 		else return rd < ld ? right : left;
 	}
 
+
+	/*
+	A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+	Write a function to determine if a number is strobogrammatic. The number is represented as a string.
+	For example, the numbers "69", "88", and "818" are all strobogrammatic.
+	*/
 	bool isStrobogrammatic(string num) {
 		map<char, char> myRule;
 		myRule.emplace('0', '0');
@@ -2738,6 +2744,39 @@ public:
 		}
 		else return false;
 		return true;
+	}
+
+	/*
+	A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+	Find all strobogrammatic numbers that are of length = n.
+	*/
+	vector<string> findStrobogrammatic(int n) {
+		vector<string> result;
+		unordered_map<char, char> myRule;
+		myRule.emplace('0', '0');
+		myRule.emplace('1', '1');
+		myRule.emplace('6', '9');
+		myRule.emplace('8', '8');
+		myRule.emplace('9', '6');
+		constructStrobogram(result, "", myRule, n);
+		return result;
+	}
+
+	void constructStrobogram(vector<string>& result, string strobogram, unordered_map<char, char>& myRule, int n) {
+		if(n == 0) {
+			if(strobogram.size() > 1 && strobogram[0] == '0') return;
+			result.push_back(strobogram);
+		}
+		else if(n == 1) {
+			constructStrobogram(result, strobogram.substr(0, strobogram.size()/2) + '0' + strobogram.substr(strobogram.size()/2), myRule, 0);
+			constructStrobogram(result, strobogram.substr(0, strobogram.size()/2) + '1' + strobogram.substr(strobogram.size()/2), myRule, 0);
+			constructStrobogram(result, strobogram.substr(0, strobogram.size()/2) + '8' + strobogram.substr(strobogram.size()/2), myRule, 0);
+		}
+		else {
+			for(auto p : myRule) {
+				constructStrobogram(result, p.first + strobogram + p.second, myRule, n - 2);
+			}
+		}
 	}
 
 	vector<vector<int>> findLeaves(TreeNode* root) {
@@ -5239,6 +5278,47 @@ public:
 			}
 		}
 		return pq.top();
+	}
+
+	/*
+	There is a fence with n posts, each post can be painted with one of the k colors.
+	You have to paint all the posts such that no more than two adjacent fence posts have the same color.
+	Return the total number of ways you can paint the fence.
+	*/
+	int numWays(int n, int k) {
+		if(n == 0) return 0;
+		int same = 0; 
+		int diff = k;
+		for(int i = 2; i <= n; i++) {
+			int temp = diff;
+			diff = (k - 1)*(same + diff);
+			same = temp;
+		}
+		return same + diff;
+	}
+
+	/*
+	The API: int read4(char *buf) reads 4 characters at a time from a file.
+	The return value is the actual number of characters read. For example, it returns 3 if there is only 3 characters left in the file.
+	By using the read4 API, implement the function int read(char *buf, int n) that reads n characters from the file.
+	*/
+	int read4(char *buf);
+
+	/**
+     * @param buf Destination buffer
+     * @param n   Maximum number of characters to read
+     * @return    The number of characters read
+     */
+	int read(char *buf, int n) {
+		int t = read4(buf);
+		if(t >= n) return n;
+		if(t < 4) return t;
+		return 4 + read(buf + 4, n - 4);
+	}
+
+	//Call multiple times
+	int readII(char *buf, int n) {
+
 	}
 
 	/*
