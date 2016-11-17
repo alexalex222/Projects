@@ -2701,14 +2701,19 @@ public:
 		return result;
 	}
 
+	/*
+	Given a non-empty binary search tree and a target value, find the value in the BST that is closest to the target.
+	Given target value is a floating point.
+	You are guaranteed to have only one unique value in the BST that is closest to the target.
+	*/
 	int closestValue(TreeNode* root, double target) {
 		if (!root) return INT_MAX;
 		if (!root->left && !root->right) return root->val;
 		int left = closestValue(root->left, target);
 		int right = closestValue(root->right, target);
-		double od = abs(root->val - target);
-		double ld = abs(left - target);
-		double rd = abs(right - target);
+		double od = abs(static_cast<double>(root->val) - target);
+		double ld = left != INT_MAX ? abs(static_cast<double>(left) - target) : 1.7976931348623158e+308;
+		double rd = right != INT_MAX ? abs(static_cast<double>(right) - target) : 1.7976931348623158e+308;
 		if (od < rd) return od < ld ? root->val : left;
 		else return rd < ld ? right : left;
 	}
@@ -4889,6 +4894,32 @@ public:
 		return result;
 	}
 
+	//Given a non-empty string s and an abbreviation abbr, return whether the string matches with the given abbreviation.
+	bool validWordAbbreviation(string word, string abbr) {
+		int len1 = static_cast<int>(word.size());
+		int len2 = static_cast<int>(abbr.size());
+		int i = 0;
+		int j = 0;
+		while (i < len1 && j < len2) {	
+			if (abbr[j] == word[i]) {
+				i++;
+				j++;
+			}
+			else if (abbr[j] >= '1' && abbr[j] <= '9') {
+				int num = 0;
+				while (abbr[j] >= '0' && abbr[j] <= '9' && j < len2) {
+					num = num * 10 + abbr[j] - '0';
+					j++;
+				}
+				i += num;
+			}
+			else {
+				return false;
+			}
+		}
+		return (i == len1 && j == len2);
+	}
+
 	//Given n points on a 2D plane, find if there is such a line parallel to y-axis that reflect the given points.
 	bool isReflected(vector<pair<int, int>>& points) {
 		if (points.size() < 2) return true;
@@ -5164,7 +5195,7 @@ public:
 			minNum = min(minNum, num);
 			sum += num;
 		}
-		return sum - minNum*nums.size();
+		return sum - static_cast<int>(minNum*nums.size());
 	}
 
 	/*

@@ -51,7 +51,7 @@ int main() {
 
 	vector<vector<int>> v{ { 1,1}};
 
-	string ret = mySolution.fractionToDecimal(-1, -2147483648);
+	bool ret = mySolution.validWordAbbreviation("internationalization", "i12iz4n");
 	
 	
 

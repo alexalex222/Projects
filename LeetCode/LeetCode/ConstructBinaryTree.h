@@ -74,4 +74,22 @@ public:
 		}
 		return (myStack.size() == 1 && myStack[0] == "#");
 	}
+
+	/*
+	Given an array of numbers, verify whether it is the correct preorder traversal sequence of a binary search tree.
+	You may assume each number in the sequence is unique.
+	*/
+	bool verifyPreorder(vector<int>& preorder) {
+		int low = INT_MIN;
+		stack<int> treeStack;
+		for (int val : preorder) {
+			if (val < low) return false;
+			while (!treeStack.empty() && val > treeStack.top()) {
+				low = treeStack.top();
+				treeStack.pop();		
+			}
+			treeStack.push(val);
+		}
+		return true;
+	}
 };

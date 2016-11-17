@@ -76,6 +76,64 @@ public:
 		if(!numStack.empty()) return numStack.top();
 		else return result;
 	}
+
+
+	/*
+	Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+	Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+	*/
+	int depthSum(vector<NestedInteger>& nestedList) {
+		int result = 0;
+		for (NestedInteger inner : nestedList) {
+			result += depthSum(inner, 1);
+		}
+		return result;
+	}
+
+	int depthSum(NestedInteger ni, int depth) {
+		int result = 0;
+		if (ni.isInteger()) return depth*ni.getInteger();
+		for (NestedInteger inner : ni.getList()) {
+			result += depthSum(inner, depth + 1);
+		}
+		return result;
+	}
+
+	/*
+	Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+	Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+	the weight is defined from bottom up. i.e., the leaf level integers have weight 1, 
+	and the root level integers have the largest weight.
+	*/
+	int depthSumInverse(vector<NestedInteger>& nestedList) {
+		int res = 0;
+		vector<vector<int>> v;
+		for (auto a : nestedList) {
+			helper(a, 0, v);
+		}
+		for (int i = static_cast<int>(v.size()) - 1; i >= 0; --i) {
+			for (int j = 0; j < static_cast<int>(v[i].size()); ++j) {
+				res += v[i][j] * (static_cast<int>(v.size()) - i);
+			}
+		}
+		return res;
+	}
+
+	void helper(NestedInteger &ni, int depth, vector<vector<int>> &v) {
+		vector<int> t;
+		if (depth < v.size()) t = v[depth];
+		else v.push_back(t);
+		if (ni.isInteger()) {
+			t.push_back(ni.getInteger());
+			if (depth < v.size()) v[depth] = t;
+			else v.push_back(t);
+		}
+		else {
+			for (auto a : ni.getList()) {
+				helper(a, depth + 1, v);
+			}
+		}
+	}
 };
 
 class NestedIterator {
