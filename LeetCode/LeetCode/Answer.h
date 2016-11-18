@@ -5376,6 +5376,69 @@ public:
 		}
 		return result == INT_MAX ? -1 : result;
 	}
+	
+	/*
+	Given n balloons, indexed from 0 to n-1. Each balloon is painted with a number on it represented by array nums. 
+	You are asked to burst all the balloons. If the you burst balloon i you will get nums[left] * nums[i] * nums[right] coins. 
+	Here left and right are adjacent indices of i. After the burst, the left and right then becomes adjacent.
+	*/
+	int maxCoins(vector<int>& nums) {
+		int n = static_cast<int>(nums.size());
+		nums.insert(nums.begin(), 1);
+		nums.push_back(1);
+		vector<vector<int>> dp(nums.size(), vector<int>(nums.size(), 0));
+		for(int len = 1; len <= n; len++) {
+			for(int left = 1; left <= n - len + 1; left++) {
+				int right = left + len - 1;
+				for(int k = left; k <= right; k++) {
+					dp[left][right] = max(dp[left][right], nums[left - 1]*nums[k]*nums[right + 1] + dp[left][k-1] + dp[k+1][right]);
+				}
+			}
+		}
+		return dp[1][n];
+	}
+
+	/*
+	Given two arrays of length m and n with digits 0-9 representing two numbers. 
+	Create the maximum number of length k <= m + n from digits of the two. 
+	The relative order of the digits from the same array must be preserved. 
+	Return an array of the k digits. You should try to optimize your time and space complexity.
+	*/
+	vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+		int n1 = static_cast<int>(nums1.size());
+		int n2 = static_cast<int>(nums2.size());
+		vector<int> result;
+		for(int i = max(0, k - n2); i <= min(k, n1); i++) {
+			vector<int> v1 = maxVector(nums1, i);
+			vector<int> v2 = maxVector(nums2, k - i);
+			result = max(result, mergerVector(v1, v2));
+		}
+		return result;
+	}
+
+	vector<int> maxVector(vector<int> nums, int k) {
+		int drop = static_cast<int>(nums.size()) - k;
+		vector<int> result;
+		for(int num : nums) {
+			while(drop && result.size() && result.back() < num) {
+				result.pop_back();
+				drop--;
+			}
+			result.push_back(num);
+		}
+		result.resize(k);
+		return result;
+	}
+
+	vector<int> mergerVector(vector<int> nums1, vector<int> nums2) {
+		vector<int> result;
+		while(nums1.size() + nums2.size()) {
+			vector<int> &tmp = nums1 > nums2 ? nums1 : nums2;
+			result.push_back(tmp[0]);
+			tmp.erase(tmp.begin());
+		}
+		return result;
+	}
 };
 
 #endif
