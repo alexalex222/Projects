@@ -5297,36 +5297,84 @@ public:
 		return same + diff;
 	}
 
-	/*
-	The API: int read4(char *buf) reads 4 characters at a time from a file.
-	The return value is the actual number of characters read. For example, it returns 3 if there is only 3 characters left in the file.
-	By using the read4 API, implement the function int read(char *buf, int n) that reads n characters from the file.
-	*/
-	int read4(char *buf);
-
-	/**
-     * @param buf Destination buffer
-     * @param n   Maximum number of characters to read
-     * @return    The number of characters read
-     */
-	int read(char *buf, int n) {
-		int t = read4(buf);
-		if(t >= n) return n;
-		if(t < 4) return t;
-		return 4 + read(buf + 4, n - 4);
+	//Given a string, find the length of the longest substring T that contains at most 2 distinct characters.
+	int lengthOfLongestSubstringTwoDistinct(string s) {
+		int result = 0;
+		int left = 0;
+		unordered_map<char, int> charCount;
+		for (int i = 0; i < static_cast<int>(s.size()); i++) {
+			charCount[s[i]]++;
+			while (charCount.size() > 2) {
+				if (--charCount[s[left]] == 0) charCount.erase(s[left]);
+				left++;
+			}
+			result = max(result, i - left + 1);
+		}
+		return result;
 	}
 
-	//Call multiple times
-	int readII(char *buf, int n) {
-
+	//Longest Substring with At Most K Distinct Characters
+	int lengthOfLongestSubstringKDistinct(string s, int k) {
+		int result = 0;
+		int left = 0;
+		unordered_map<char, int> charCount;
+		for (int i = 0; i < static_cast<int>(s.size()); i++) {
+			charCount[s[i]]++;
+			while (charCount.size() > k) {
+				if (--charCount[s[left]] == 0) charCount.erase(s[left]);
+				left++;
+			}
+			result = max(result, i - left + 1);
+		}
+		return result;
 	}
 
 	/*
-	A sequence of number is called arithmetic 
-	if it consists of at least three elements and if the difference between any two consecutive elements is the same.
+	You want to build a house on an empty land which reaches all buildings in the shortest amount of distance. 
+	You can only move up, down, left and right.
+	Each 0 marks an empty land which you can pass by freely.
+	Each 1 marks a building which you cannot pass through.
+	Each 2 marks an obstacle which you cannot pass through.
 	*/
-	int numberOfArithmeticSlices(vector<int>& A) {
-
+	int shortestDistance(vector<vector<int>>& grid) {
+		int result = INT_MAX;
+		int rows = static_cast<int>(grid.size());
+		int cols = static_cast<int>(grid[0].size());
+		int visitMarker = 0;
+		vector<vector<int>> sum(rows, vector<int>(cols, 0));
+		vector<pair<int, int>> dirs;
+		dirs.push_back(make_pair(1, 0));
+		dirs.push_back(make_pair(-1, 0));
+		dirs.push_back(make_pair(0, 1));
+		dirs.push_back(make_pair(0, -1));
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (grid[i][j] == 1) {
+					result = INT_MAX;
+					vector<vector<int>> dist(rows, vector<int>(cols, 0));
+					queue<pair<int, int>> q;
+					q.push(pair<int, int>(i, j));
+					while (!q.empty()) {
+						int x = q.front().first;
+						int y = q.front().second;
+						q.pop();
+						for (auto dir : dirs) {
+							int newX = x + dir.first;
+							int newY = y + dir.second;
+							if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && grid[newX][newY] == visitMarker) {
+								grid[newX][newY]--;
+								q.push(pair<int, int>(newX, newY));
+								dist[newX][newY] = dist[x][y] + 1;
+								sum[newX][newY] += dist[newX][newY];
+								result = min(result, sum[newX][newY]);
+							}
+						}
+					}
+					visitMarker--;
+				}
+			}
+		}
+		return result == INT_MAX ? -1 : result;
 	}
 };
 

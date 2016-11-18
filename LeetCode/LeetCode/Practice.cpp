@@ -44,14 +44,15 @@ using namespace std;
 #include "TicTacToe.h"
 #include "NestedInteger.h"
 #include "PeekingIterator.h"
+#include "Read4.h"
 
 
 int main() {
 	Solution mySolution = Solution();
 
-	vector<vector<int>> v{ { 1,1}};
+	vector<vector<int>> v{ {1, 0, 2, 0, 1},{0, 0, 0, 0, 0},{0, 0, 1, 0, 0} };
 
-	bool ret = mySolution.validWordAbbreviation("internationalization", "i12iz4n");
+	int ret = mySolution.shortestDistance(v);
 	
 	
 

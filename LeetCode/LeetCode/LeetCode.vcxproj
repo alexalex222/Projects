@@ -169,6 +169,7 @@
     <ClInclude Include="QueueStack.h" />
     <ClInclude Include="RandomizedSet.h" />
     <ClInclude Include="RangeSum.h" />
+    <ClInclude Include="Read4.h" />
     <ClInclude Include="StackQueue.h" />
     <ClInclude Include="TicTacToe.h" />
     <ClInclude Include="Trie.h" />
