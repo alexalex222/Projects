@@ -11,10 +11,10 @@ public:
 		if (nums.empty()) return allPer;
 		allPer.push_back(vector<int>(1, nums[0]));
 
-		for (int i = 1; i<nums.size(); i++) {
+		for (int i = 1; i<static_cast<int>(nums.size()); i++) {
 			int n = static_cast<int>(allPer.size());
 			for (int j = 0; j<n; j++) {
-				for (int k = 0; k<allPer[j].size(); k++) {
+				for (int k = 0; k<static_cast<int>(allPer[j].size()); k++) {
 					vector<int> per = allPer[j];
 					per.insert(per.begin() + k, nums[i]);
 					allPer.push_back(per);
@@ -34,7 +34,7 @@ public:
 		for (int element : nums) {
 			set<vector<int>> permSet;
 			for (vector<int> onePerm : result) {
-				for (int j = 0; j <= onePerm.size(); j++) {
+				for (int j = 0; j <= static_cast<int>(onePerm.size()); j++) {
 					vector<int> temp = onePerm;
 					temp.insert(temp.begin() + j, element);
 					permSet.insert(temp);
@@ -55,7 +55,36 @@ public:
 	1,1,5 -> 1,5,1
 	*/
 	void nextPermutation(vector<int>& nums) {
-		std::next_permutation(nums.begin(), nums.end());
+		int len = static_cast<int>(nums.size());
+		if(len < 2) return;
+		int index1 = -1;
+		int index2 = -1;
+		for(int i = len - 2; i >=0; i--) {
+			if(nums[i] < nums[i+1]) {
+				index1 = i;
+				break;
+			}
+		}
+
+		if(index1 >= 0) {
+			for(int j = len -1; j >= 0; j--) {
+				if(nums[j] > nums[index1]) {
+					index2 = j;
+					break;
+				}
+			}
+		}
+		
+
+		if(index1 == -1 && index2 == -1) {
+			reverse(nums.begin(), nums.end());
+		}
+		else {
+			int temp = nums[index1];
+			nums[index1] = nums[index2];
+			nums[index2] = temp;
+			reverse(nums.begin() + index1 + 1, nums.end());
+		}
 	}
 
 	/*
@@ -119,6 +148,34 @@ public:
 		}
 		return result;
 	}
+
+	/*
+	The set [1,2,3,…,n] contains a total of n! unique permutations
+	Given n and k, return the kth permutation sequence.
+	Given n will be between 1 and 9 inclusive.
+	*/
+	string getPermutation(int n, int k){
+		string s = "";
+		for(int i = 1; i <= n; i++) {
+			s = s + to_string(i);
+		}
+		k--;
+		string result = "";
+		while(s.size() >= 1) {
+			int len = static_cast<int>(s.size());
+			int modder = 1;
+			for(int i = 1; i < len; i++) {
+				modder = modder*i;
+			}
+			int curIndex = k/modder;
+			k = k%modder;
+			string selectedNum = string(1, s[curIndex]);
+			result = result + selectedNum;
+			s.erase(curIndex, 1);
+		}
+		return result;
+	}
+
 
 private:
 	vector<string> generatePermute(string s) {
