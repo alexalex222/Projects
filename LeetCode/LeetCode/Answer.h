@@ -1816,6 +1816,11 @@ public:
 		return maxWater;
 	}
 
+	/*
+	Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+	Integers in each row are sorted in ascending from left to right.
+	Integers in each column are sorted in ascending from top to bottom.
+	*/
 	bool searchMatrix(vector<vector<int>>& matrix, int target) {
 		int numRows = (int)matrix.size();
 		int numCols = (int)matrix[0].size();
@@ -2040,7 +2045,10 @@ public:
 		return result;
 	}
 
-
+	/*
+	Given a digit string, return all possible letter combinations that the number could represent.
+	A mapping of digit to letters (just like on the telephone buttons) is given below.
+	*/
 	vector<string> letterCombinations(string digits) {
 		string trans[] = { "", " ", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz" };
 		vector<string> result;
@@ -2826,6 +2834,10 @@ public:
 		return root;
 	}
 
+	/*
+	Given an unsorted array nums, reorder it in-place such that nums[0] <= nums[1] >= nums[2] <= nums[3]....
+	For example, given nums = [3, 5, 2, 1, 6, 4], one possible answer is [1, 6, 2, 5, 3, 4].
+	*/
 	void wiggleSort(vector<int>& nums) {
 		int n = static_cast<int>(nums.size());
 		for (int i = 1; i < n; i++) {
@@ -2833,6 +2845,27 @@ public:
 				int temp = nums[i];
 				nums[i] = nums[i - 1];
 				nums[i - 1] = temp;
+			}
+		}
+	}
+
+	/*
+	Given an unsorted array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+	*/
+	void wiggleSortII(vector<int>& nums) {
+		vector<int> temp = nums;
+		int n = static_cast<int>(nums.size());
+		int k = (n-1)/2;
+		int j = n - 1;
+		sort(temp.begin(), temp.end());
+		for(int i = 0; i < n; i++) {
+			if(i%2 == 0) {
+				nums[i] = temp[k];
+				k--;
+			}
+			else {
+				nums[i] = temp[j];
+				j--;
 			}
 		}
 	}
@@ -3838,6 +3871,10 @@ public:
 		return result;
 	}
 
+	/*
+	You are given two integer arrays nums1 and nums2 sorted in ascending order and an integer k.
+	Define a pair (u,v) which consists of one element from the first array and one element from the second array.
+	*/
 	vector<pair<int, int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
 		vector<pair<int, int>> result;
 		for (int num1 : nums1) {
@@ -5377,7 +5414,7 @@ public:
 		unordered_map<char, int> charCount;
 		for (int i = 0; i < static_cast<int>(s.size()); i++) {
 			charCount[s[i]]++;
-			while (charCount.size() > k) {
+			while (static_cast<int>(charCount.size()) > k) {
 				if (--charCount[s[left]] == 0) charCount.erase(s[left]);
 				left++;
 			}
@@ -5738,7 +5775,39 @@ public:
 		return result;
 	}
 
-	
+	/*
+	Given a rows x cols screen and a sentence represented by a list of words, find how many times the given sentence can be fitted on the screen.
+	A word cannot be split into two lines.
+	The order of words in the sentence must remain unchanged.
+	Two consecutive words in a line must be separated by a single space.
+	Total words in the sentence won't exceed 100.
+	Length of each word won't exceed 10.
+	*/
+	int wordsTyping(vector<string>& sentence, int rows, int cols) {
+		string all = "";
+		for(string word : sentence) all = all + word + " ";
+		int result = 0;
+		int idx = 0;
+		int n = static_cast<int>(sentence.size());
+		int totLen = static_cast<int>(all.size());
+		for(int i = 0; i < rows; i++) {
+			int remainCols = cols;
+			while(remainCols > 0) {
+				if(static_cast<int>(sentence[idx].size()) <= remainCols) {
+					remainCols = remainCols - static_cast<int>(sentence.size());
+					if(remainCols > 0) remainCols--;
+					idx++;
+					if(idx >= n) {
+						result = result + 1 + (remainCols/totLen);
+						remainCols = remainCols%totLen;
+						idx = 0;
+					}
+				}
+				else break;
+			}
+		}
+		return result;
+	}
 };
 
 #endif
