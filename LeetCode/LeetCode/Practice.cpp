@@ -50,9 +50,10 @@ using namespace std;
 int main() {
 	Solution mySolution = Solution();
 
-	vector<vector<int>> v{ {1, 0, 2, 0, 1},{0, 0, 0, 0, 0},{0, 0, 1, 0, 0} };
+	vector<vector<int>> v{ { 1,2,3,4 },{ 5,6,7,8 },{ 9,10,11,12 }, { 13,14,15,16} };
+	vector<int> height{ 1,4,5,9 };
 
-	int ret = mySolution.shortestDistance(v);
+	vector<int> ret = mySolution.spiralOrder(v);
 	
 	
 
