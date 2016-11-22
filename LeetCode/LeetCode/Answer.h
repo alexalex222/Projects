@@ -2383,6 +2383,7 @@ public:
 		return result;
 	}
 
+	//Count Numbers with Unique Digits
 	int countNumbersWithUniqueDigits(int n) {
 		n = min(n, 10);
 		vector<int> dp(n + 1, 9);
@@ -5684,7 +5685,7 @@ public:
 	int islandPerimeter(vector<vector<int>>& grid) {
 		int rows = static_cast<int>(grid.size());
 		if (rows == 0) return 0;
-		int cols = static_cast<int>(grid.size());
+		int cols = static_cast<int>(grid[0].size());
 		if (cols == 0) return 0;
 		int result = 0;
 		
@@ -5825,6 +5826,34 @@ public:
 			}
 		}
 		return dp[1][n];
+	}
+
+	
+	vector<int> largestDivisibleSubset(vector<int>& nums) {
+		sort(nums.begin(), nums.end());
+		int n = static_cast<int>(nums.size());
+		vector<int> dp(n, 1);
+		vector<int> parent(n, -1);
+		vector<int> result;
+		int max_len = 0;
+		int max_idx = -1;
+		for(int i = 0; i < n; i++) {
+			for(int j = i - 1; j >= 0; j--) {
+				if(nums[i]%nums[j] == 0 && dp[i] < dp[j] + 1) {
+					dp[i] = dp[j] + 1;
+					parent[i] = j;
+				}
+			}
+			if(dp[i] > max_len) {
+				max_len = dp[i];
+				max_idx = i;
+			}
+		}
+		while(max_idx != -1) {
+			result.push_back(nums[max_idx]);
+			max_idx = parent[max_idx];
+		}
+		return result;
 	}
 };
 
