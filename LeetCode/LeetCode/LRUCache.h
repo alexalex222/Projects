@@ -10,6 +10,11 @@ struct cacheNode {
 		val = v;
 	}
 };
+
+/*
+Design and implement a data structure for Least Recently Used (LRU) cache. 
+It should support the following operations: get and set.
+*/
 class LRUCache{
 private:
 	unordered_map<int, list<cacheNode>::iterator> myMap;
@@ -20,6 +25,7 @@ public:
 		this->capacity = capacity;
     }
     
+	//Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
     int get(int key) {
 		if(myMap.find(key) != myMap.end()) {
 			cacheList.splice(cacheList.begin(), cacheList, myMap[key]);
@@ -31,6 +37,7 @@ public:
 		}
     }
     
+	//Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the 
     void set(int key, int value) {
 		if(myMap.find(key) == myMap.end()) {
 			if(static_cast<int>(myMap.size()) == capacity) {
@@ -47,3 +54,35 @@ public:
 		}
     }
 };
+
+//Design and implement a data structure for Least Frequently Used (LFU) cache.
+class LFUCache {
+private:
+	int capacity;
+	unordered_map<int, int> keyValMap;
+	vector<pair<int, int>> freqRecord;
+public:
+    LFUCache(int capacity) {
+		this->capacity;
+    }
+    //Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
+    int get(int key) {
+        
+    }
+    
+	/*
+	Set or insert the value if the key is not already present. When the cache reaches its capacity, 
+	it should invalidate the least frequently used item before inserting a new item. For the purpose of this problem, 
+	when there is a tie (i.e., two or more keys that have the same frequency), the least recently used key would be evicted.
+	*/
+    void set(int key, int value) {
+        
+    }
+};
+
+/**
+ * Your LFUCache object will be instantiated and called as such:
+ * LFUCache obj = new LFUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.set(key,value);
+ */
