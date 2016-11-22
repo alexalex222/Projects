@@ -3604,6 +3604,11 @@ public:
 		return t[(n - 1) % len] - '0';
 	}
 
+	/*
+	Equations are given in the format A / B = k, where A and B are variables represented as strings, 
+	and k is a real number (floating point number). 
+	Given some queries, return the answers. If the answer does not exist, return -1.0.
+	*/
 	vector<double> calcEquation(vector<pair<string, string>> equations, vector<double>& values, vector<pair<string, string>> queries) {
 		unordered_map<string, int> sampleMap;
 		int index = 0;
@@ -5807,6 +5812,19 @@ public:
 			}
 		}
 		return result;
+	}
+
+	int getMoneyAmount(int n) {
+		vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+		for (int len = 1; len < n; len++) {
+			for (int start = 1; start + len <= n; start++) {
+				dp[start][start + len] = INT_MAX;
+				for (int i = start; i < start + len; i++) {
+					dp[start][start + len] = min(dp[start][start + len], i + max(dp[start][i - 1], dp[i + 1][start + len]));
+				}
+			}
+		}
+		return dp[1][n];
 	}
 };
 
