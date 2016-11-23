@@ -59,15 +59,17 @@ public:
 class LFUCache {
 private:
 	int capacity;
-	unordered_map<int, int> keyValMap;
-	vector<pair<int, int>> freqRecord;
+	multimap<size_t, cacheNode> freqKey;
+	unordered_map<int, multimap<size_t, cacheNode>::iterator> keyPos;
 public:
     LFUCache(int capacity) {
 		this->capacity;
     }
     //Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
     int get(int key) {
-        
+		if(keyPos.find(key) != keyPos.end()) {
+
+		}
     }
     
 	/*
