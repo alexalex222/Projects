@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <unordered_set>
 #include <bitset>
+#include <assert.h>
 
 using namespace std;
 #include "Answer.h"
@@ -53,7 +54,7 @@ int main() {
 	vector<vector<int>> v{ { 1,2,3,4 },{ 5,6,7,8 },{ 9,10,11,12 }, { 13,14,15,16} };
 	vector<int> height{ 1,4,5,9 };
 
-	vector<int> ret = mySolution.spiralOrder(v);
+	bool ret = mySolution.isMatchReg("aa", "a");
 	
 	
 

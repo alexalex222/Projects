@@ -3508,7 +3508,26 @@ public:
 	'*' Matches zero or more of the preceding element.
 	*/
 	bool isMatchReg(string s, string p) {
+		return isMatchReg(s, 0, p, 0);
+	}
 
+	bool isMatchReg(string s, size_t i, string p, size_t j) {
+		if (j == p.size()) return i == s.size();
+
+		//next char is not '*', must match current char
+		if (j + 1 == p.size() || p[j + 1] != '*') {
+			if (i == s.size() || (p[j] != s[i] && p[j] != '.')) {
+				return false;
+			}
+			else return isMatchReg(s, i + 1, p, j + 1);
+		}
+
+		//next char is '*'
+		while (i != s.size() && (s[i] == p[j] || p[j] == '.')) {
+			if (isMatchReg(s, i, p, j + 2)) return true;
+			i++;
+		}
+		return isMatchReg(s, i, p, j + 2);
 	}
 
 	/*
@@ -5852,6 +5871,69 @@ public:
 		while(max_idx != -1) {
 			result.push_back(nums[max_idx]);
 			max_idx = parent[max_idx];
+		}
+		return result;
+	}
+
+	/*
+	Given an 2D board, count how many different battleships are in it. The battleships are represented with 'X's, 
+	empty slots are represented with '.'s. You may assume the following rules:
+	*/
+	int countBattleships(vector<vector<char>>& board) {
+		int rows = static_cast<int>(board.size());
+		if (rows == 0) return 0;
+		int cols = static_cast<int>(board[0].size());
+		if (cols == 0) return 0;
+		int result = 0;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (board[i][j] == '.' || (i > 0 && board[i - 1][j] == 'X') || (j > 0 && board[i][j - 1] == 'X')) continue;
+				result++;
+			}
+		}
+		return result;
+	}
+
+	/*
+	Given a list of strings which contains only lowercase alphabets, 
+	group all strings that belong to the same shifting sequence.
+	*/
+	vector<vector<string>> groupStrings(vector<string>& strings) {
+		vector<vector<string>> result;
+		unordered_map<string, vector<string>> group;
+		for (string s : strings) {
+			string key = "";
+			for (char c : s) {
+				key += to_string((c - s[0] + 26) % 26) + " ";
+			}
+			group[key].push_back(s);
+		}
+		for (auto p : group) {
+			result.push_back(p.second);
+		}
+		return result;
+	}
+
+	vector<pair<int, int>> getSkyline(vector<vector<int>>& buildings) {
+		vector<pair<int, int>> result;
+		vector<pair<int, int>> height;
+		multiset<int> m;
+		int pre = 0;
+		int cur = 0;
+		for (vector<int> building : buildings) {
+			height.push_back(make_pair(building[0], -building[2]));
+			height.push_back(make_pair(building[1], building[2]));
+		}
+		sort(height.begin(), height.end());
+		m.insert(0);
+		for (auto h : height) {
+			if (h.second < 0) m.insert(-h.second);
+			else m.erase(m.find(h.second));
+			cur = *m.rbegin();
+			if (cur != pre) {
+				result.push_back(make_pair(h.first, cur));
+				pre = cur;
+			}
 		}
 		return result;
 	}

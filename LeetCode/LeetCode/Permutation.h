@@ -150,7 +150,7 @@ public:
 	}
 
 	/*
-	The set [1,2,3,…,n] contains a total of n! unique permutations
+	The set [1,2,3,n] contains a total of n! unique permutations
 	Given n and k, return the kth permutation sequence.
 	Given n will be between 1 and 9 inclusive.
 	*/
