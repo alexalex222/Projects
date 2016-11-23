@@ -5257,34 +5257,44 @@ public:
 	Derive the order of letters in this language.
 	*/
 	string alienOrder(vector<string>& words) {
+		set<pair<char, char>> charOder;
+		unordered_set<char> chars;
+		unordered_map<char, int> charCount;
+		queue<char> q;
+		string result = "";
 		int n = static_cast<int>(words.size());
-		if (n == 0) return "";
-		unordered_map<char, bool> used;
-		unordered_map<char, vector<char>> charOrder;
-		for (string word : words) {
-			for (char c : word) {
-				if (used.find(c) == used.end()) used.insert(pair<char, bool>(c, false));
-			}
+		for(string word : words) {
+			chars.insert(word.begin(), word.end());
 		}
-		for (int i = 1; i < n; i++) {
-			int j = i - 1;
-			string pre = words[j];
-			string cur = words[i];
-			while (j < min(static_cast<int>(pre.size()), static_cast<int>(cur.size()))) {
-				if (pre[j] != cur[j]) {
-					if (charOrder.find(pre[j]) == charOrder.end()) {
-						vector<char> afters;
-						afters.push_back(cur[j]);
-						charOrder.emplace(pre[j], afters);
-					}
-					else {
-						charOrder[pre[j]].push_back(cur[j]);
-					}
+		for(int i = 0; i < n - 1; i++) {
+			for(int j = 0; j < min(static_cast<int>(words[i].size()), static_cast<int>(words[i+1].size())); j++) {
+				if(words[i][j] != words[i+1][j]) {
+					charOder.insert(make_pair(words[i][j], words[i+1][j]));
 					break;
 				}
-				j++;
 			}
 		}
+		for(pair<char, char> p : charOder) charCount[p.second]++;
+		for(char c : chars) {
+			if(charCount[c] == 0) {
+				q.push(c);
+				result += c;
+			}
+		}
+		while(!q.empty()) {
+			char lead = q.front();
+			q.pop();
+			for(auto p : charOder) {
+				if(p.first == lead) {
+					charCount[p.second]--;
+					if(charCount[p.second] == 0) {
+						q.push(p.second);
+						result += p.second;
+					}
+				}
+			}
+		}
+		return result.size() == chars.size() ? result : "";
 	}
 
 
@@ -5933,6 +5943,30 @@ public:
 			if (cur != pre) {
 				result.push_back(make_pair(h.first, cur));
 				pre = cur;
+			}
+		}
+		return result;
+	}
+
+	int findMaximumXOR(vector<int>& nums) {
+		int result = 0;
+		int mask = 0;
+		for(int i = 31; i >= 0; i--) {
+			mask = mask|(1<<i);
+			set<int> s;
+			for(int num : nums) {
+				s.insert(num&mask);
+			}
+			//assume position i in result is 1
+			int t = result | (1<<i);
+			// if prefix_another ^ prefix = t
+			// then prefix_another = t ^ prefix
+			for(int prefix : s) {
+				//given prefix, if prefix_another exists, position i in result must be 1
+				if(s.find(t^prefix) != s.end()) {
+					result = t;
+					break;
+				}
 			}
 		}
 		return result;
