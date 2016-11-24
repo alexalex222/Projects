@@ -2221,6 +2221,52 @@ public:
 		dfsIslands(grid, i, j + 1);
 	}
 
+	vector<int> numIslands2(int m, int n, vector<pair<int, int>>& positions) {
+		vector<int> result;
+		unordered_map<int, vector<int>> groupToIslands;
+		unordered_map<int, int> islandToGroup;
+		int groupNo = 1;
+		for(auto pos : positions) {
+			int row = pos.first;
+			int col = pos.second;
+			int p = row*n + col;	//Unique identifier for this island
+			unordered_set<int> candidates;
+			int top = row - 1 < 0 ? -1 : (row - 1)*n + col;
+			int bot = row + 1 >= m ? -1 : (row + 1)*n + col;
+			int left = col - 1 < 0 ? - 1 : row*n + col - 1;
+			int right = col + 1 >= n ? - 1 : row*n + col + 1;
+			if(islandToGroup.count(top)) candidates.insert(islandToGroup[top]);
+			if(islandToGroup.count(bot)) candidates.insert(islandToGroup[bot]);
+			if(islandToGroup.count(left)) candidates.insert(islandToGroup[left]);
+			if(islandToGroup.count(right)) candidates.insert(islandToGroup[right]);
+
+			if(candidates.empty()) { // This island does not belong to any existing group
+				vector<int> islands;
+				islands.push_back(p);
+				groupToIslands.emplace(groupNo, islands);
+				islandToGroup.emplace(p, groupNo);
+				groupNo++;
+			}
+			else { // This island belongs to one or more existng group(s). Merge them.
+				auto it = candidates.begin();
+				int mergedGroup = *it;
+				it++;
+				while(it != candidates.end()) {
+					for(int a : groupToIslands[*it]) {
+						groupToIslands[mergedGroup].push_back(a);
+						islandToGroup[a] = mergedGroup;
+					}
+					groupToIslands.erase(*it);
+					it++;
+				}
+				groupToIslands[mergedGroup].push_back(p);
+				islandToGroup.emplace(p, mergedGroup);
+			}
+			result.push_back(static_cast<int>(groupToIslands.size()));
+		}
+		return result;
+	}
+
 	/*
 	Implement pow(x, n).
 	*/
@@ -4327,6 +4373,50 @@ public:
 		return true;
 	}
 
+	//Given a set of words (without duplicates), find all word squares you can build from them.
+	vector<vector<string>> wordSquares(vector<string>& words) {
+		TrieNode* root = new TrieNode();
+		int i = 0;
+		for(string word : words) {
+			TrieNode* node = root;
+			for(char c : word) {
+				if(node->children[c - 'a'] == NULL) node->children[c - 'a'] = new TrieNode();
+				node = node->children[c - 'a'];
+				node->indexes.push_back(i);
+			}
+			i++;
+		}
+		vector<vector<string>> result;
+		vector<string> oneSolution(words[0].size());
+		for(string word : words) {
+			oneSolution[0] = word;
+			dfsWordSquares(words, root, result, oneSolution, 1);
+		}
+		return result;
+	}
+
+	void dfsWordSquares(vector<string>& words, TrieNode* root, vector<vector<string>>& result, vector<string>& oneSolution,  int level) {
+		if(level == static_cast<int>(words[0].size())) {
+			result.push_back(oneSolution);
+			return;
+		}
+		string str = "";
+		for(int i = 0; i < level; i++) {
+			str += oneSolution[i][level];
+		}
+
+		TrieNode* node = root;
+		for(char c : str) {
+			if(node->children[c - 'a'] == NULL) return;
+			node = node->children[c - 'a'];
+		}
+
+		for(int i : node->indexes) {
+			oneSolution[level] = words[i];
+			dfsWordSquares(words, root, result, oneSolution, level + 1);
+		}
+	}
+
 	/*
 	Given a binary tree, find the length of the longest consecutive sequence path.
 	The path refers to any sequence of nodes from some starting node to any node in the tree along the parent-child connections. 
@@ -5984,6 +6074,104 @@ public:
 			sums.insert(sum);
 		}
 		return result;
+	}
+
+	/*
+	The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.
+	Given an integer n, return all distinct solutions to the n-queens puzzle.
+	*/
+	vector<vector<string>> solveNQueens(int n) {
+		vector<vector<string>> result;
+		vector<string> oneSolution;
+		if(n == 0) return result;
+		vector<int> rowToCol(n, -1);
+		dfsNQueens(result, oneSolution, rowToCol, n, 0);
+		return result;
+	}
+
+	void dfsNQueens(vector<vector<string>>& result, vector<string>& oneSolution, vector<int>& rowToCol, int n, int cur) {
+		if(cur == n) {
+			result.push_back(oneSolution);
+			return;
+		}
+		for(int colPos = 0; colPos < n; colPos++) {
+			rowToCol[cur] = colPos;
+			bool validPos = true;
+			for(int preRow = 0; preRow < cur; preRow++) {
+				if(rowToCol[cur] == rowToCol[preRow] || cur - preRow == abs(rowToCol[cur] - rowToCol[preRow])) validPos = false;
+			}
+			if(validPos) {
+				string oneRow = string(n, '.');
+				oneRow[colPos] = 'Q';
+				oneSolution.push_back(oneRow);
+				dfsNQueens(result, oneSolution, rowToCol, n, cur+1);
+				oneSolution.pop_back();
+			}
+		}
+	}
+
+	//instead outputting board configurations, return the total number of distinct solutions.
+	int totalNQueens(int n) {
+		vector<vector<string>> result;
+		vector<string> oneSolution;
+		if(n == 0) return 0;
+		vector<int> rowToCol(n, -1);
+		dfsNQueens(result, oneSolution, rowToCol, n, 0);
+		return static_cast<int>(result.size());
+	}
+
+	/*
+	An image is represented by a binary matrix with 0 as a white pixel and 1 as a black pixel. 
+	The black pixels are connected, i.e., there is only one black region. Pixels are connected horizontally and vertically. 
+	Given the location (x, y) of one of the black pixels, return the area of the smallest (axis-aligned) rectangle that encloses all black pixels.
+	*/
+	int minArea(vector<vector<char>>& image, int x, int y)  {
+		int left = y, right = y, up = x, down = x;
+        dfs(image, x, y, left, right, up, down);
+        return (right - left + 1) * (down - up + 1);
+	}
+
+	void dfs(vector<vector<char>> &image, int x, int y, int &left, int &right, int &up, int &down) {
+        if (x < 0 || x >= static_cast<int>(image.size()) || y < 0 || y >= static_cast<int>(image[0].size()) || image[x][y] != '1') return;
+        left = min(left, y); 
+        right = max(right, y);
+        up = min(up, x);
+        down = max(down, x);
+        image[x][y] = '2';
+        dfs(image, x + 1, y, left, right, up, down);
+        dfs(image, x - 1, y, left, right, up, down);
+        dfs(image, x, y + 1, left, right, up, down);
+        dfs(image, x, y - 1, left, right, up, down);
+    }
+
+
+	/*
+	Given a non-empty string str and an integer k, rearrange the string such that the same characters are at least distance k from each other.
+	All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "";
+	*/
+	string rearrangeString(string str, int k) {
+		if (k == 0) return str;
+        string res;
+        int len = (int)str.size();
+        unordered_map<char, int> m;
+        priority_queue<pair<int, char>> q;
+        for (auto a : str) ++m[a];
+        for (auto it = m.begin(); it != m.end(); ++it) {
+            q.push({it->second, it->first});
+        }
+        while (!q.empty()) {
+            vector<pair<int, int>> v;
+            int cnt = min(k, len);
+            for (int i = 0; i < cnt; ++i) {
+                if (q.empty()) return "";
+                auto t = q.top(); q.pop();
+                res.push_back(t.second);
+                if (--t.first > 0) v.push_back(t);
+                --len;
+            }
+            for (auto a : v) q.push(a);
+        }
+        return res;
 	}
 };
 
