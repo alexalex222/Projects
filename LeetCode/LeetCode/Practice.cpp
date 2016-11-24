@@ -49,6 +49,21 @@ using namespace std;
 
 
 int main() {
+
+	LFUCache LFUobj = LFUCache(0);
+	LFUobj.set(0, 0);
+	int  p = LFUobj.get(0);
+	LFUobj.set(2, 2);
+	
+	LFUobj.set(3, 3);
+	p = LFUobj.get(2);
+	p = LFUobj.get(3);
+	LFUobj.set(4, 4);
+	p = LFUobj.get(1);
+	p = LFUobj.get(3);
+	p = LFUobj.get(4);
+
+
 	Solution mySolution = Solution();
 
 	vector<vector<int>> v{ { 1,2,3,4 },{ 5,6,7,8 },{ 9,10,11,12 }, { 13,14,15,16} };

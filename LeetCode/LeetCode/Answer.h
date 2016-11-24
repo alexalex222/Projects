@@ -5971,6 +5971,20 @@ public:
 		}
 		return result;
 	}
+
+	//Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+	int countRangeSum(vector<int>& nums, int lower, int upper) {
+		int result = 0;
+		long long sum = 0;
+		multiset<long long> sums;
+		sums.insert(0);
+		for (int i = 0; i < static_cast<int>(nums.size()); i++) {
+			sum += nums[i];
+			result += static_cast<int>(distance(sums.lower_bound(sum - upper), sums.upper_bound(sum - lower)));
+			sums.insert(sum);
+		}
+		return result;
+	}
 };
 
 #endif

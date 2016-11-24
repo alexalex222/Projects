@@ -63,13 +63,19 @@ private:
 	unordered_map<int, multimap<size_t, cacheNode>::iterator> keyPos;
 public:
     LFUCache(int capacity) {
-		this->capacity;
+		this->capacity = capacity;
     }
     //Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
     int get(int key) {
-		if(keyPos.find(key) != keyPos.end()) {
-
+		if(capacity > 0 && keyPos.find(key) != keyPos.end()) {
+			multimap<size_t, cacheNode>::iterator it = keyPos[key];
+			pair<size_t, cacheNode> updatedElement = make_pair(it->first + 1, it->second);
+			int result = it->second.val;
+			freqKey.erase(it);
+			keyPos[key] = freqKey.emplace(updatedElement);
+			return result;
 		}
+		else return -1;
     }
     
 	/*
@@ -78,7 +84,19 @@ public:
 	when there is a tie (i.e., two or more keys that have the same frequency), the least recently used key would be evicted.
 	*/
     void set(int key, int value) {
-        
+		if (keyPos.find(key) == keyPos.end()) {
+			if (static_cast<int>(keyPos.size()) == capacity && capacity > 0) {
+				keyPos.erase(freqKey.begin()->second.key);
+				freqKey.erase(freqKey.begin());
+			}
+			if(capacity > 0) keyPos[key] = freqKey.emplace(1, cacheNode(key, value));		
+		}
+		else {
+			multimap<size_t, cacheNode>::iterator it = keyPos[key];
+			pair<size_t, cacheNode> updatedElment = make_pair(it->first + 1, cacheNode(key, value));
+			freqKey.erase(it);
+			keyPos[key] = freqKey.insert(updatedElment);
+		}
     }
 };
 
