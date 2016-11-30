@@ -5104,58 +5104,6 @@ public:
 		return result;
 	}
 
-	//Write a function to generate the generalized abbreviations of a word.
-	vector<string> generateAbbreviations(string word) {
-		vector<string> result;
-		for (int i = 0; i < static_cast<int>(pow(2, word.size())); i++) {
-			string out = "";
-			int cnt = 0;
-			int t = i;
-			for (int j = 0; j < static_cast<int>(word.size()); j++) {
-				if ((t & 1) == 1) {
-					cnt++;
-					if (j == static_cast<int>(word.size()) - 1) out += to_string(cnt);
-				}
-				else {
-					if (cnt != 0) {
-						out += to_string(cnt);
-						cnt = 0;
-					}
-					out += word[j];
-				}
-				t = t >> 1;
-			}
-			result.push_back(out);
-		}
-		return result;
-	}
-
-	//Given a non-empty string s and an abbreviation abbr, return whether the string matches with the given abbreviation.
-	bool validWordAbbreviation(string word, string abbr) {
-		int len1 = static_cast<int>(word.size());
-		int len2 = static_cast<int>(abbr.size());
-		int i = 0;
-		int j = 0;
-		while (i < len1 && j < len2) {	
-			if (abbr[j] == word[i]) {
-				i++;
-				j++;
-			}
-			else if (abbr[j] >= '1' && abbr[j] <= '9') {
-				int num = 0;
-				while (abbr[j] >= '0' && abbr[j] <= '9' && j < len2) {
-					num = num * 10 + abbr[j] - '0';
-					j++;
-				}
-				i += num;
-			}
-			else {
-				return false;
-			}
-		}
-		return (i == len1 && j == len2);
-	}
-
 	//Given n points on a 2D plane, find if there is such a line parallel to y-axis that reflect the given points.
 	bool isReflected(vector<pair<int, int>>& points) {
 		if (points.size() < 2) return true;
@@ -6157,7 +6105,7 @@ public:
         priority_queue<pair<int, char>> q;
         for (auto a : str) ++m[a];
         for (auto it = m.begin(); it != m.end(); ++it) {
-            q.push({it->second, it->first});
+            q.push(make_pair(it->second, it->first));
         }
         while (!q.empty()) {
             vector<pair<int, int>> v;

@@ -6,6 +6,7 @@ class TrieNode {
 public:
 	bool isWord;
 	vector<TrieNode*> children;
+	vector<int> indexes;
     // Initialize your data structure here.
     TrieNode() {
 		isWord = false;
