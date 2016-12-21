@@ -3089,7 +3089,8 @@ public:
 					comb.push_back(nums[left]);
 					comb.push_back(nums[right]);
 					result.push_back(comb);
-					comb.clear();
+					comb.pop_back();
+					comb.pop_back();
 					while (left < right && nums[left + 1] == nums[left]) {
 						left++;
 					}
@@ -3111,6 +3112,7 @@ public:
 				nums_new.assign(nums.begin() + i + 1, nums.end());
 				comb.push_back(nums[i]);
 				nSum(nums_new, target - nums[i], N - 1, comb, result);
+				comb.pop_back();
 			}
 		}
 	}
@@ -4105,7 +4107,8 @@ public:
 		return max(maxLen, curLen);
 	}
 
-	//Given an array nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
+	//Given an array nums, there is a sliding window of size k which is moving from the very left of the array to the very right. 
+	//You can only see the k numbers in the window. Each time the sliding window moves right by one position.
 	vector<int> maxSlidingWindow(vector<int>& nums, int k) {
 		vector<int> result;
 		deque<int> myWindow;
@@ -6120,6 +6123,159 @@ public:
             for (auto a : v) q.push(a);
         }
         return res;
+	}
+
+	//Given two integers x and y, calculate the Hamming distance.
+	int hammingDistance(int x, int y) {
+		int temp = x^y;
+		int result = 0;
+		for(int i = 0; i < 32; i++) {
+			if((temp & 1) == 1) result++;
+			temp = temp>>1;
+		}
+		return result;
+	}
+
+	/*
+	design a standard heater with fixed warm radius to warm all the houses.
+	you are given positions of houses and heaters on a horizontal line, 
+	find out minimum radius of heaters so that all houses could be covered by those heaters.
+	*/
+	int findRadius(vector<int>& houses, vector<int>& heaters) {
+		sort(heaters.begin(), heaters.end());
+		int minRadius = 0;
+		for(int i = 0; i < static_cast<int>(houses.size()); i++) {
+			//Returns an iterator pointing to the first element in the range [first,last) which does not compare less than val.
+			auto lower = lower_bound(heaters.begin(), heaters.end(), houses[i]);
+			int currRadius = INT_MAX;
+
+			//if such heater exists, update the currRadius to cover current house
+			if(lower != heaters.end()) currRadius = *lower - houses[i];
+
+			//if current heater is not the first one, check if current house can be covered by previous heater
+			if(lower != heaters.begin()) {
+				auto preHeater = lower - 1;
+				currRadius = min(currRadius, houses[i] - *preHeater);
+			}
+			minRadius = max(currRadius, minRadius);
+		}
+		return minRadius;
+	}
+
+	int findSubstringInWraproundString(string p) {
+		vector<int> endingCount(26, 0);
+		int len = 0;
+		for(int i = 0; i < static_cast<int>(p.size()); i++) {
+			if(i > 0 && (p[i] - p[i-1] == 1 || p[i] - p[i-1] == -25)) {
+				len++;
+			}
+			else len = 1;
+			endingCount[p[i] - 'a'] = max(endingCount[p[i] - 'a'], len);
+		}
+		int result = 0;
+		for(int cnt : endingCount) result += cnt;
+		return result;
+	}
+
+	bool find132pattern(vector<int>& nums) {
+		int last = INT_MIN;
+		stack<int> s;
+		int n = static_cast<int>(nums.size());
+		for(int i = n - 1; i >= 0; i--) {
+			if(nums[i] < last) return true;
+			else {
+				while(!s.empty() && nums[i] > s.top()) {
+					last = s.top();
+					s.pop();
+				}
+			}
+			s.push(nums[i]);
+		}
+		return false;
+	}
+
+	int minMutation(string start, string end, vector<string>& bank) {
+		queue<string> toVisit;
+		unordered_set<string> dict(bank.begin(), bank.end());
+		int dist = 0;
+		
+		if(dict.find(end) == dict.end()) return -1;
+		toVisit.push(start);
+		dict.insert(start);
+		dict.insert(end);
+		while(!toVisit.empty()) {
+			int n = static_cast<int>(toVisit.size());
+			for(int i = 0; i < n; i++) {
+				string str = toVisit.front();
+				toVisit.pop();
+				if(str == end) return dist;
+				changeAWord(str, dict, toVisit);
+			}
+			dist++;
+		}
+		return -1;
+	}
+
+	void changeAWord(string word, unordered_set<string>& dict, queue<string>& toVisit) {
+		dict.erase(word);
+		for(int i = 0; i < static_cast<int>(word.size()); i++) {
+			char currChar = word[i];
+			for(char c : string("abcdefghijklmnopqrstuvwxyz")) {
+				word[i] = c;
+				if(dict.find(word) != dict.end()) {
+					toVisit.push(word);
+					dict.erase(word);
+				}
+			}
+			word[i] = currChar;
+		}
+	}
+
+	int ladderLength(string beginWord, string endWord, unordered_set<string>& wordList) {
+		queue<string> toVisit;
+		int dist = 1;
+		if(wordList.find(endWord) == wordList.end()) return 0;
+		toVisit.push(beginWord);
+		wordList.insert(beginWord);
+		wordList.insert(endWord);
+		while(!toVisit.empty()) {
+			int n = static_cast<int>(toVisit.size());
+			for(int i = 0; i < n; i++) {
+				string str = toVisit.front();
+				toVisit.pop();
+				if(str == endWord) return dist;
+				changeAWord(str, wordList, toVisit);
+			}
+			dist++;
+		}
+		return 0;
+	}
+
+	/*
+	Longest Substring with At Least K Repeating Characters
+	*/
+	int longestSubstring(string s, int k) {
+		unordered_map<char, int> m;
+		for(char c : s) {
+			m[c]++;
+		}
+		unordered_set<char> splitSet;
+		for(auto p : m) {
+			if(p.second < k) splitSet.insert(p.first);
+		}
+		if(splitSet.empty()) return static_cast<int>(s.size());
+		int result = 0;
+		int left = 0;
+		int right = 0;
+		while(right < static_cast<int>(s.size())) {
+			if(splitSet.find(s[right]) != splitSet.end()) {
+				if(right != left) result = max(result, longestSubstring(s.substr(left, right - left), k));
+				left = right + 1;
+			}
+			right++;
+		}
+		if(right != left) result = max(result, longestSubstring(s.substr(left, right - left), k));
+		return result;
 	}
 };
 
