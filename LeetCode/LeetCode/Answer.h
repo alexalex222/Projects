@@ -2787,15 +2787,13 @@ public:
 	You are guaranteed to have only one unique value in the BST that is closest to the target.
 	*/
 	int closestValue(TreeNode* root, double target) {
-		if (!root) return INT_MAX;
-		if (!root->left && !root->right) return root->val;
-		int left = closestValue(root->left, target);
-		int right = closestValue(root->right, target);
-		double od = abs(static_cast<double>(root->val) - target);
-		double ld = left != INT_MAX ? abs(static_cast<double>(left) - target) : 1.7976931348623158e+308;
-		double rd = right != INT_MAX ? abs(static_cast<double>(right) - target) : 1.7976931348623158e+308;
-		if (od < rd) return od < ld ? root->val : left;
-		else return rd < ld ? right : left;
+		int result = root->val;
+		TreeNode* p = root;
+		while (p) {
+			if (abs(result - target) >= (p->val - target)) result = p->val;
+			p = target < p->val ? p->left : p->right;
+		}
+		return result;
 	}
 
 
@@ -2981,30 +2979,29 @@ public:
 	}
 
 	int countComponents(int n, vector<pair<int, int>>& edges) {
-		vector<set<int>> g;
-		for (pair<int, int> edge : edges) {
-			if (g.empty()) {
-				set<int> tempGraph;
-				tempGraph.emplace(edge.first);
-				tempGraph.emplace(edge.second);
-				g.push_back(tempGraph);
-			}
-			else {
-				for (set<int>& curGraph : g) {
-					if (curGraph.find(edge.first) == curGraph.end() && curGraph.find(edge.second) == curGraph.end()) {
-						set<int> tempGraph;
-						tempGraph.emplace(edge.first);
-						tempGraph.emplace(edge.second);
-						g.push_back(tempGraph);
-					}
-					else {
-						if (curGraph.find(edge.first) == curGraph.end()) curGraph.emplace(edge.first);
-						if (curGraph.find(edge.second) == curGraph.end()) curGraph.emplace(edge.second);
-					}
-				}
+		int result = 0;
+		vector<bool> visited(n, false);
+		vector <vector<int>> adjacent(n);
+		for (auto edge : edges) {
+			adjacent[edge.first].push_back(edge.second);
+			adjacent[edge.second].push_back(edge.first);
+		}
+
+		for (int i = 0; i < n; i++) {
+			if (!visited[i]) {
+				result++;
+				dfsCountComponents(adjacent, visited, i);
 			}
 		}
-		return static_cast<int>(g.size());
+		return result;
+	}
+
+	void dfsCountComponents(vector<vector<int>>& adjacent, vector<bool>& visited, int i) {
+		if (visited[i]) return;
+		visited[i] = true;
+		for (int j = 0; j < static_cast<int>(adjacent[i].size()); j++) {
+			dfsCountComponents(adjacent, visited, adjacent[i][j]);
+		}
 	}
 
 	int threeSumClosest(vector<int>& nums, int target) {
@@ -6277,6 +6274,80 @@ public:
 		if(right != left) result = max(result, longestSubstring(s.substr(left, right - left), k));
 		return result;
 	}
+
+	//Count the number of segments in a string, where a segment is defined to be a contiguous sequence of non-space characters.
+	int countSegments(string s) {
+		istringstream ss(s);
+		string line = "";
+		int result = 0;
+		while (getline(ss, line, ' ')) {
+			if (line.size() > 0) result++;
+		}
+		return result;
+	}
+
+	void rotate(vector<vector<int>>& matrix) {
+		int m = static_cast<int>(matrix.size());
+		if (m == 0) return;
+		int n = static_cast<int>(matrix[0].size());
+		for (int i = 0; i < m; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int temp = matrix[i][j];
+				matrix[i][j] = matrix[j][i];
+				matrix[j][i] = temp;
+			}
+		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m / 2; j++) {
+				int temp = matrix[i][j];
+				matrix[i][j] = matrix[i][m - j - 1];
+				matrix[i][m - j - 1] = temp;
+			}
+		}
+	}
+
+	int findMaxConsecutiveOnes(vector<int>& nums) {
+		int n = static_cast<int>(nums.size());
+		if (n == 0) return 0;
+		int result = 0;
+		int flipLim = 0;
+		queue<int> zeroIndex;
+		int low = 0;
+		int high = 0;
+		for (high = 0; high < n; high++) {
+			if (nums[high] == 0) zeroIndex.push(high);
+			while (static_cast<int>(zeroIndex.size()) > flipLim) {
+				low = zeroIndex.front() + 1;
+				zeroIndex.pop();
+			}
+			result = max(result, high - low + 1);
+		}
+		return result;
+	}
+
+	//Given a binary array, find the maximum number of consecutive 1s in this array if you can flip at most one 0.
+	int findMaxConsecutiveOnes2(vector<int>& nums) {
+		int n = static_cast<int>(nums.size());
+		if (n == 0) return 0;
+		int result = 0;
+		int zeroCount = 0;;
+		int flipLim = 1;
+		int low = 0;
+		int high = 0;
+		for (high = 0; high < n; high++) {
+			if (nums[high] == 0) zeroCount++;
+			while (zeroCount > flipLim) {
+				if (nums[low++] == 0) {
+					zeroCount--;
+				}
+			}
+			result = max(result, high - low + 1);
+		}
+		return result;
+	}
+
+
 };
 
 #endif

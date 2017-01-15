@@ -46,6 +46,7 @@ using namespace std;
 #include "NestedInteger.h"
 #include "PeekingIterator.h"
 #include "Read4.h"
+#include "Logger.h"
 
 
 int main() {
@@ -63,13 +64,15 @@ int main() {
 	p = LFUobj.get(3);
 	p = LFUobj.get(4);
 
+	
+
 
 	Solution mySolution = Solution();
 
 	vector<vector<int>> v{ { 1,2,3,4 },{ 5,6,7,8 },{ 9,10,11,12 }, { 13,14,15,16} };
-	vector<int> height{ 1,4,5,9 };
+	vector<int> height{ 1, 0};
 
-	bool ret = mySolution.isMatchReg("aa", "a");
+	int ret = mySolution.findMaxConsecutiveOnes(height);
 	
 	
 

@@ -156,6 +156,7 @@
     <ClInclude Include="Codec.h" />
     <ClInclude Include="ConstructBinaryTree.h" />
     <ClInclude Include="HitCounter.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="LRUCache.h" />
     <ClInclude Include="MedianFinder.h" />
     <ClInclude Include="MinStack.h" />
