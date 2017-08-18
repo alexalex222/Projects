@@ -12,6 +12,21 @@ from selenium import webdriver
 start_date = '2017-08-06'
 end_date = '2017-08-17'
 
+def parse_speakhi():
+    # create a new Chrome session
+    browser = webdriver.Chrome()
+    
+    browser.get("http://speakhi.com/web/teacher/teacher_login.html")
+    username = browser.find_element_by_id("login_teacher_account")
+    password = browser.find_element_by_id("login_teacher_pwd")
+    username.send_keys('nicholas')
+    password.send_keys('111111')
+    browser.find_element_by_class_name("hwj-interaction-lg-button").click()
+    browser.refresh
+    time.sleep(10)
+    html_source = browser.page_source
+    courses = browser.find_element_by_class_name("course-content").text.split('\n')
+
 def parse_html(html_file):
     parsed_html = BeautifulSoup(html_file, 'lxml')
     teacher = parsed_html.body.find('h3', attrs={'id':'teachername'}).text
