@@ -1,3 +1,11 @@
+//
+//  main.cpp
+//  LeetcodeCppXCode
+//
+//  Created by Kuilin Chen on 2017-10-02.
+//  Copyright © 2017 Kuilin Chen. All rights reserved.
+//
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -76,5 +84,5 @@ int main() {
 	
 	
 
-	return 0;
+	return ret;
 }

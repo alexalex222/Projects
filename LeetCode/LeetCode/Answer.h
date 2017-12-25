@@ -405,10 +405,6 @@ public:
 		return n % 4 != 0;
 	}
 
-	bool canIWin(int maxChoosableInteger, int desiredTotal) {
-
-	}
-
 	//Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
 	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
 		ListNode *result = new ListNode(0);
@@ -534,7 +530,7 @@ public:
 		if (nums.empty()) return 0;
 		size_t i = 0;
 		int j = 0;
-		auto k = nums.size();
+		//auto k = nums.size();
 		while (i < nums.size()) {
 			if (nums[i] != nums[j]) {
 				auto temp = nums[j + 1];
@@ -610,7 +606,7 @@ public:
 	*/
 	vector<int> plusOne(vector<int>& digits) {
 		int addone = 1;
-		for (auto i = digits.size() - 1; i >= 0; i--) {
+		for (int i = static_cast<int>(digits.size()) - 1; i >= 0; i--) {
 			int currentDigit = (digits[i] + addone) % 10;
 			addone = (digits[i] + addone) / 10;
 			digits[i] = currentDigit;
@@ -1508,6 +1504,7 @@ public:
 			if (target > nums[i] && target <= nums[i + 1]) return i + 1;
 			else i = i + 1;
 		}
+        return 0;
 	}
 
 	int numTrees(int n) {
@@ -2707,7 +2704,7 @@ public:
 	int minMeetingRooms(vector<Interval>& intervals) {
 		int n = static_cast<int>(intervals.size());
 		if (n < 1) return 0;
-		int count;
+		int count = 0;
 		sort(intervals.begin(), intervals.end(), compareInterval);
 		priority_queue<int, vector<int>, greater<int>> pq;
 		pq.push(intervals[0].end);
@@ -3005,7 +3002,7 @@ public:
 	}
 
 	int threeSumClosest(vector<int>& nums, int target) {
-		int result;
+		int result = 0;
 		sort(nums.begin(), nums.end());
 		int minDiff = INT_MAX;
 		int n = static_cast<int>(nums.size());
@@ -3489,8 +3486,8 @@ public:
 		}
 		int m1 = start1 + k / 2 - 1;
 		int m2 = start2 + k / 2 - 1;
-		int mid1;
-		int mid2;
+        int mid1 = 0;
+		int mid2 = 0;
 		if (m1 < static_cast<int>(nums1.size())) {
 			mid1 = nums1[m1];
 		}
@@ -4348,11 +4345,11 @@ public:
 	}
 
 	int arrangeCoins(int n) {
-		int k = static_cast<long>(sqrt(n)*sqrt(2)) + 1;
+		long k = static_cast<long>(sqrt(n)*sqrt(2)) + 1;
 		while (k*k + k > 2 * n) {
 			k--;
 		}
-		return k;
+		return static_cast<int>(k);
 	} 
 
 	/*
@@ -4725,7 +4722,7 @@ public:
 		string oneSeq = "";
 		int i = 0;
 		while (i < len) {
-			char c = s[i];
+			//char c = s[i];
 			if (s[i] >= '0' && s[i] <= '9') {
 				int num = 0;
 				while (s[i] >= '0' && s[i] <= '9' && i < len) {
@@ -5073,7 +5070,7 @@ public:
 	which consist of minimum of m keys and maximum n keys.
 	*/
 	int numberOfPatterns(int m, int n) {
-		int result;
+		int result = 0;
 		vector<vector<int>> jumps(10, vector<int>(10, 0));
 		vector<bool> visited(10, false);
 		jumps[1][3] = jumps[3][1] = 2;
@@ -5382,7 +5379,7 @@ public:
 	find the minimum number of moves required to make all array elements equal, where a move is incrementing n - 1 elements by 1.
 	*/
 	int minMoves(vector<int>& nums) {
-		int result = 0;
+		//int result = 0;
 		int sum = 0;
 		int minNum = INT_MAX;
 		for(int num : nums) {

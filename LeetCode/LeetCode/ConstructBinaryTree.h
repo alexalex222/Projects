@@ -16,7 +16,7 @@ public:
 		int rootVal = preorder[preStart];
 		TreeNode* root = new TreeNode(rootVal);
 
-		int k;
+		int k = 0;
 		for (int i = inStart; i <= inEnd; i++) {
 			if (inorder[i] == rootVal) {
 				k = i;
@@ -44,7 +44,7 @@ public:
 		int rootVal = postorder[postEnd];
 		TreeNode* root = new TreeNode(rootVal);
 
-		int k;
+		int k = 0;
 		for (int i = inStart; i <= inEnd; i++) {
 			if (inorder[i] == rootVal) {
 				k = i;
